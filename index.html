@@ -2,73 +2,91 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>DYNAPHARM System - Version Professionnelle</title>
+    <title>DYNAPHARM System - Version PDF Exacte</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         body { font-family: -apple-system, sans-serif; padding: 10px; background: #f0f2f5; padding-bottom: 80px; }
-        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 600px; margin: auto; }
-        h2 { text-align: center; color: #1a73e8; text-transform: uppercase; font-size: 18px; }
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 650px; margin: auto; }
+        h2 { text-align: center; color: #1a73e8; text-transform: uppercase; font-size: 18px; margin-top: 5px; }
+        .search-box { background: #fffde7; padding: 10px; border-radius: 8px; border: 1px solid #ffd600; margin-bottom: 15px; }
         .shop-box { border: 2px solid #1a73e8; padding: 12px; border-radius: 8px; margin-bottom: 20px; background: #fff; position: relative; }
-        .item-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 5px; margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 8px; align-items: end; }
+        .item-row { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr auto; gap: 5px; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; align-items: end; }
         label { font-weight: bold; font-size: 9px; color: #666; display: block; }
-        input, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; box-sizing: border-box; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; box-sizing: border-box; }
         button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 8px; }
         .btn-add { background: #333; color: white; }
         .btn-item { background: #e8f0fe; color: #1a73e8; border: 1px dashed #1a73e8; }
         .pdf-btn { background: #28a745; color: white; font-size: 16px; margin-top: 20px; }
-        .del-btn { background: #ffeded; color: #d93025; width: 30px; padding: 5px; }
+        .del-btn { background: #ffeded; color: #d93025; width: 35px; height: 35px; padding: 0; }
         .footer { text-align: center; margin-top: 30px; font-size: 11px; color: #888; border-top: 1px solid #ddd; padding-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>RAPPORT DES VENTES DYNAPHARM</h2>
+    <h2>RAPPORT DYNAPHARM GLOBAL</h2>
+    
     <div style="text-align: center; margin-bottom: 15px;">
         <label>Date du Rapport</label>
         <input type="date" id="reportDate">
     </div>
 
+    <div class="search-box">
+        <label>🔍 RECHERCHE RAPIDE PAR CODE (ex: DRC1201)</label>
+        <input type="text" id="masterSearch" placeholder="Entrez le code..." oninput="filterAllSelects()">
+    </div>
+
     <div id="shopsContainer"></div>
 
     <button class="btn-add" onclick="addShop()">+ AJOUTER UNE BOUTIQUE</button>
-    <button class="pdf-btn" onclick="generatePDF()">TÉLÉCHARGER LE RAPPORT PDF</button>
+    <button class="pdf-btn" onclick="generatePDF()">TÉLÉCHARGER LE RAPPORT PDF EXACT</button>
 
-    <div class="footer">
-        DÉVELOPPÉ PAR: <b>ARSHAD</b> | <b>+243 902 702 275</b>
-    </div>
+    <div class="footer">DÉVELOPPÉ PAR: <b>ARSHAD</b> | <b>+243 902 702 275</b></div>
 </div>
 
 <script>
     document.getElementById('reportDate').valueAsDate = new Date();
 
+    // Exact list in PDF order
     const products = [
-        {code: "DRC1201", name: "CAFE GINKO EN POUDRE", price: 13.00},
-        {code: "DRC1202", name: "CAFÉ DE THE VERT GANODERMA", price: 14.00},
-        {code: "DRC1203", name: "CAFÉ KACIP FATIMA GANODERMA", price: 14.00},
-        {code: "DRC1204", name: "CAFE TONGKAT ET MACCA", price: 14.00},
-        {code: "DRC1205", name: "CAFÉ CUPPUCCINO GANODERMA", price: 15.00},
-        {code: "DRC1802A", name: "D.I. LIQUID ALFALFA 500ML", price: 20.00},
+        {code: "DRC1201", name: "CAFE GINKO EN POUDRE ET GINSENG", price: 13.00},
+        {code: "DRC1202", name: "CAFÉ DE THE VERT AVEC POUDRE GANODERMA", price: 14.00},
+        {code: "DRC1203", name: "CAFÉ KACIP FATIMA AVEC POUDRE GANODERMA", price: 14.00},
+        {code: "DRC1204", name: "CAFE AVEC LA POUDRE DE TONGKAT ET MACCA", price: 14.00},
+        {code: "DRC1205", name: "CAFÉ CUPPUCCINO AVEC LA POUDRE GANODERMA", price: 15.00},
+        {code: "DRC1802A", name: "D.I. LIQUID ALFALFA PLUS GUARANA 500ML", price: 20.00},
         {code: "DRC1804", name: "GANODERMA CAFE (20x21g)", price: 11.00},
         {code: "DRC1810", name: "CAPUSLE DE YEE GANO 90s", price: 23.00},
         {code: "DRC1811", name: "YEEGARLIC CAPSULE 90's", price: 23.00},
-        {code: "DRC1814", name: "GANODERMA CHOCOLAT", price: 19.00},
-        {code: "DRC1817", name: "CAFÉ CHOIX DU PRESIDENT", price: 15.00},
-        {code: "DRC1818", name: "CAFÉ NOIR GANODERMA", price: 14.00},
-        {code: "DRC2802", name: "COMPRIMES LAIT DE CHEVRE", price: 16.00},
-        {code: "DRC2804", name: "POUDRE GRAINES DE SOJA", price: 17.00},
+        {code: "DRC1814", name: "GANODERMA CHOCOLAT (30'sX 30's)", price: 19.00},
+        {code: "DRC1817", name: "CAFÉ CHOIX DU PRESIDENT 4 EN 1", price: 15.00},
+        {code: "DRC1818", name: "CAFÉ NOIR GANODERMA ET TONGKATI ALI", price: 14.00},
+        {code: "DRC2802", name: "COMPRIMES DE LAIT DE CHEVRE 150's", price: 16.00},
+        {code: "DRC2804", name: "POUDRE INSTANTANEE DES GAINES DE SOJA", price: 17.00},
         {code: "DRC2805", name: "MARINE SOLUBLE SPIRULLINA", price: 17.00},
-        {code: "DRC2807", name: "COMPRIME SPIRULINA (300's)", price: 22.00},
+        {code: "DRC2807", name: "COMPRIME DE SPIRULINA (300's)", price: 22.00},
         {code: "DRC2812", name: "HERBA WARISAN MAHARANI", price: 36.00},
-        {code: "DRC2814", name: "LAIT DE CHEVRE PREMIX", price: 15.00},
+        {code: "DRC2813", name: "MELANGE INSTANTANE DE SOJA GINGEMBRE", price: 14.00},
+        {code: "DRC2814", name: "LAIT DE CHEVRE EN 1 ET POUDRE", price: 15.00},
         {code: "DRC3804", name: "DYNA TONIC 780ml", price: 33.00},
         {code: "DRC3809", name: "YEE YANG YEN TABLET 90's", price: 23.00},
-        {code: "DRC3810", name: "RED COFFEE WITH GINSENG", price: 13.00},
+        {code: "DRC3810", name: "RED COFFEE WITH GINSENG 12's", price: 13.00},
+        {code: "DRC3812", name: "GREEN TEA EXTRACT CAPSULE 60's", price: 23.00},
+        {code: "DRC3814", name: "PROLINK 20's x 20g", price: 36.00},
+        {code: "DRC4803", name: "GINSENG MIEL ET GINGEMBRE", price: 17.00},
+        {code: "DRC4805", name: "GINSENG CAPSULE 9 x 10's", price: 31.00},
         {code: "DRC4810", name: "CAFÉ TONGKAT ALI (20x21g)", price: 11.00},
+        {code: "DRC4811", name: "GINALI CAPSULE 100's", price: 27.00},
         {code: "DRC4815", name: "YEEGINKGO TABLET 90's", price: 23.00},
-        {code: "DRC4824", name: "SEA CUCUMBER JELLY 500ml", price: 31.00}
+        {code: "DRC4817", name: "MILK THISTLE TABLET 120's", price: 36.00},
+        {code: "DRC4821", name: "TONGKAT ALI CAPSULE 100's", price: 21.00},
+        {code: "DRC4824", name: "SEA CUCUMBER JELLY 500ml", price: 31.00},
+        {code: "DRC5802N", name: "NONI 500ml", price: 26.00},
+        {code: "DRC5803", name: "NONI PLUS TEA 30's x 3g", price: 19.00},
+        {code: "DRC5806", name: "DYNA 'S' TABLET 120's", price: 21.00},
+        {code: "DRC9918", name: "DYNA SERENOA TABLET 100's", price: 32.00}
     ];
 
     function addShop() {
@@ -76,8 +94,8 @@
         const div = document.createElement('div');
         div.className = 'shop-box';
         div.innerHTML = `
-            <button style="position:absolute; top:5px; right:5px; background:red; color:white; width:auto; padding:3px 8px; border-radius:4px; font-size:10px;" onclick="this.parentElement.remove()">SUPPRIMER</button>
-            <input type="text" class="shopName" placeholder="NOM DE LA BOUTIQUE" style="font-weight:bold; width:80%; margin-bottom:10px;">
+            <button style="position:absolute; top:5px; right:5px; background:red; color:white; width:auto; padding:3px 8px; font-size:10px;" onclick="this.parentElement.remove()">X</button>
+            <input type="text" class="shopName" placeholder="NOM DE LA BOUTIQUE (ex: KAPENDA)" style="font-weight:bold; width:80%; margin-bottom:10px;">
             <div class="items-list"></div>
             <button class="btn-item" onclick="addItem(this)">+ AJOUTER PRODUIT</button>
         `;
@@ -89,22 +107,29 @@
         const list = btn.parentElement.querySelector('.items-list');
         const row = document.createElement('div');
         row.className = 'item-row';
-        let opts = products.map(p => `<option value="${p.price}|${p.code}|${p.name}">${p.code} - ${p.name}</option>`).join('');
+        let options = products.map(p => `<option value="${p.price}|${p.code}|${p.name}">${p.code} - ${p.name}</option>`).join('');
         row.innerHTML = `
-            <div><label>Produit</label><select class="pData">${opts}</select></div>
+            <div><label>Produit</label><select class="pData">${options}</select></div>
             <div><label>Prix($)</label><input type="number" class="pPrice" readonly></div>
-            <div><label>Vendu</label><input type="number" class="pSold" value="0"></div>
-            <div><label>Stock</label><input type="number" class="pStock" value="0"></div>
+            <div><label>Vendu</label><input type="number" class="pSold" value="0" onfocus="this.select()"></div>
+            <div><label>Reste</label><input type="number" class="pStock" value="0" onfocus="this.select()"></div>
             <button class="del-btn" onclick="this.parentElement.remove()">×</button>
         `;
         list.appendChild(row);
-        updatePrice(row.querySelector('.pData'));
-        row.querySelector('.pData').addEventListener('change', function() { updatePrice(this); });
+        const sel = row.querySelector('.pData');
+        sel.addEventListener('change', () => { row.querySelector('.pPrice').value = sel.value.split('|')[0]; });
+        row.querySelector('.pPrice').value = sel.value.split('|')[0];
     }
 
-    function updatePrice(select) {
-        const price = select.value.split('|')[0];
-        select.parentElement.parentElement.querySelector('.pPrice').value = price;
+    function filterAllSelects() {
+        const val = document.getElementById('masterSearch').value.toUpperCase();
+        document.querySelectorAll('.pData').forEach(select => {
+            Array.from(select.options).forEach(opt => {
+                opt.style.display = opt.text.toUpperCase().includes(val) ? "" : "none";
+                if (opt.text.toUpperCase().includes(val)) select.value = opt.value;
+            });
+            select.dispatchEvent(new Event('change'));
+        });
     }
 
     function generatePDF() {
@@ -112,11 +137,13 @@
         const doc = new jsPDF();
         const date = document.getElementById('reportDate').value;
 
-        // Title
+        // Header matching PDF exactly
         doc.setFontSize(16);
+        doc.setTextColor(0);
         doc.text("RAPPORT GLOBAL DES VENTES & INVENTAIRE", 105, 15, { align: "center" });
-        doc.setFontSize(11);
+        doc.setFontSize(10);
         doc.text("Date ciblée: " + date, 14, 25);
+        doc.text("Ce document récapitule les ventes de toutes les boutiques pour la journée indiquée.", 14, 30);
 
         let grandTotal = 0;
         let summaries = [];
@@ -141,15 +168,16 @@
             details.push({name, total: shopTotal, rows});
         });
 
-        // Summary Table (Page 1)
+        // Summary Table (Match source: 50)
         doc.autoTable({
-            startY: 35,
+            startY: 40,
             head: [['Boutique', 'Total des Ventes ($)']],
-            body: [...summaries, [{content: 'TOTAL GÉNÉRAL DU JOUR', styles: {fontStyle: 'bold'}}, "$" + grandTotal.toFixed(2)]],
-            headStyles: { fillColor: [44, 62, 80] }
+            body: [...summaries, [{content: 'TOTAL GÉNÉRAL DU JOUR (TOUS SHOPS)', styles: {fontStyle: 'bold'}}, "$" + grandTotal.toFixed(2)]],
+            headStyles: { fillColor: [44, 62, 80] },
+            theme: 'grid'
         });
 
-        // Detail Sections
+        // Detailed Tables (Match source: 52)
         let currentY = doc.lastAutoTable.finalY + 15;
         details.forEach(shop => {
             if (currentY > 240) { doc.addPage(); currentY = 20; }
@@ -160,12 +188,13 @@
                 head: [['Code', 'Désignation', 'Prix Unit.', 'Vendu', 'Reste (Stock)', 'Total $']],
                 body: shop.rows,
                 headStyles: { fillColor: [26, 115, 232] },
-                styles: { fontSize: 8 }
+                styles: { fontSize: 7 },
+                theme: 'striped'
             });
             currentY = doc.lastAutoTable.finalY + 15;
         });
 
-        doc.save(`Rapport_Ventes_${date}.pdf`);
+        doc.save(`Ventes_Globales_TousShops_${date}.pdf`);
     }
 
     addShop();
