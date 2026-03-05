@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DYNAPHARM MASTER SYSTEM</title>
+    <title>DYNAPHARM CLOUD SYSTEM</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAQoBJhPYyYfvPSWsWse3OgfMxNmd24iXQ",
@@ -23,110 +23,124 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // This replaces the broken window.db.collection function
-        window.saveReport = async (data) => {
+        // SAVE REPORT + PDF STRING
+        window.saveToCloud = async (reportData) => {
             try {
-                const docRef = await addDoc(collection(db, "sales_reports"), data);
-                console.log("Success! ID:", docRef.id);
+                await addDoc(collection(db, "sales_reports"), reportData);
                 return true;
-            } catch (error) {
-                alert("Cloud Error: " + error.message);
+            } catch (e) {
+                alert("Cloud Error: " + e.message);
                 return false;
             }
+        };
+
+        // FETCH REPORTS TO VIEW
+        window.loadHistory = async () => {
+            const hList = document.getElementById('historyList');
+            hList.innerHTML = "Loading...";
+            try {
+                const q = query(collection(db, "sales_reports"), orderBy("timestamp", "desc"), limit(5));
+                const querySnapshot = await getDocs(q);
+                hList.innerHTML = "";
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const item = document.createElement('div');
+                    item.className = 'history-item';
+                    item.innerHTML = `
+                        <span><b>${data.date}</b> - $${data.total.toFixed(2)}</span>
+                        <button onclick="viewPDF('${data.pdfData}')">VIEW PDF</button>
+                    `;
+                    hList.appendChild(item);
+                });
+            } catch (e) { hList.innerHTML = "No reports found yet."; }
         };
     </script>
 
     <style>
-        body { font-family: sans-serif; padding: 15px; background: #f4f7f6; }
-        .card { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #1a73e8; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .btn-add { background: #333; color: white; margin-bottom: 10px; }
+        body { font-family: sans-serif; padding: 15px; background: #f0f2f5; }
+        .card { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         .btn-main { background: #28a745; color: white; font-size: 16px; }
-        .shop-entry { border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; position: relative; }
-        .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #888; border-top: 1px solid #eee; padding-top: 10px; }
+        .btn-history { background: #1a73e8; color: white; margin-top: 20px; }
+        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; }
+        .history-item button { width: auto; padding: 5px 10px; margin: 0; font-size: 11px; background: #eee; }
+        .footer { text-align: center; margin-top: 20px; font-size: 11px; color: #888; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>DYNAPHARM SYSTEM</h2>
-    
+    <h2 style="text-align:center; color:#1a73e8;">DYNAPHARM CLOUD</h2>
     <label>Date</label>
-    <input type="date" id="dateSelect">
+    <input type="date" id="reportDate">
 
     <div id="shopContainer"></div>
-    <button class="btn btn-add" onclick="addNewShop()">+ ADD SHOP</button>
-    <button id="submitBtn" class="btn btn-main" onclick="handleSubmission()">DOWNLOAD PDF & SAVE CLOUD</button>
+    <button onclick="addShop()" style="background:#333; color:white;">+ ADD SHOP</button>
+    <button id="mainBtn" class="btn-main" onclick="generateAndSave()">SAVE TO CLOUD & DOWNLOAD</button>
 
-    <div class="footer">
-        Developed by: <b>ARSHAD</b><br>
-        WhatsApp: <b>+243 902 702 275</b>
-    </div>
+    <button class="btn-history" onclick="loadHistory()">🔄 VIEW RECENT REPORTS FROM CLOUD</button>
+    <div id="historyList"></div>
+
+    <div class="footer">Developed by: ARSHAD | +243 902 702 275</div>
 </div>
 
 <script>
-    document.getElementById('dateSelect').valueAsDate = new Date();
+    document.getElementById('reportDate').valueAsDate = new Date();
 
-    function addNewShop() {
-        const container = document.getElementById('shopContainer');
+    function addShop() {
         const div = document.createElement('div');
-        div.className = 'shop-entry';
-        div.innerHTML = `
-            <input type="text" class="sName" placeholder="Shop Name">
-            <input type="number" class="sTotal" placeholder="Total Sales Amount ($)">
-        `;
-        container.appendChild(div);
+        div.innerHTML = `<input type="text" class="sName" placeholder="Shop Name">
+                         <input type="number" class="sTotal" placeholder="Amount ($)">`;
+        document.getElementById('shopContainer').appendChild(div);
     }
 
-    async function handleSubmission() {
-        const btn = document.getElementById('submitBtn');
-        btn.innerText = "⌛ PROCESSING...";
+    async function generateAndSave() {
+        const btn = document.getElementById('mainBtn');
+        btn.innerText = "⌛ UPLOADING PDF...";
         btn.disabled = true;
 
-        const date = document.getElementById('dateSelect').value;
+        const date = document.getElementById('reportDate').value;
         const shops = [];
         let grandTotal = 0;
 
-        document.querySelectorAll('.shop-entry').forEach(row => {
-            const name = row.querySelector('.sName').value || "Shop";
-            const amt = parseFloat(row.querySelector('.sTotal').value) || 0;
-            shops.push({ name, amt });
-            grandTotal += amt;
+        document.querySelectorAll('#shopContainer div').forEach(row => {
+            const n = row.querySelector('.sName').value || "Shop";
+            const a = parseFloat(row.querySelector('.sTotal').value) || 0;
+            shops.push({n, a}); grandTotal += a;
         });
 
-        // 1. Save to Cloud
-        const cloudOk = await window.saveReport({
+        // Create PDF
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text("DYNAPHARM REPORT", 105, 20, {align:"center"});
+        doc.autoTable({ startY: 30, head:[['Shop','Total']], body: shops.map(s=>[s.n, `$${s.a.toFixed(2)}`]) });
+        
+        // Convert PDF to Base64 String for Firebase
+        const pdfBase64 = doc.output('datauristring');
+
+        // Save to Firebase
+        const success = await window.saveToCloud({
             date: date,
-            shops: shops,
             total: grandTotal,
-            timestamp: new Date().toISOString()
+            pdfData: pdfBase64,
+            timestamp: new Date().getTime()
         });
 
-        if (cloudOk) {
-            // 2. Make PDF
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.text("DYNAPHARM SALES REPORT", 105, 20, { align: "center" });
-            doc.text(`Date: ${date}`, 20, 30);
-            
-            doc.autoTable({
-                startY: 40,
-                head: [['Shop', 'Amount']],
-                body: [...shops.map(s => [s.name, `$${s.amt.toFixed(2)}`]), ['GRAND TOTAL', `$${grandTotal.toFixed(2)}`]]
-            });
-
+        if (success) {
             doc.save(`Report_${date}.pdf`);
-            alert("Success! Saved to Cloud & PDF Downloaded.");
+            alert("Report saved to Cloud and Downloaded!");
         }
-
-        btn.innerText = "DOWNLOAD PDF & SAVE CLOUD";
+        btn.innerText = "SAVE TO CLOUD & DOWNLOAD";
         btn.disabled = false;
     }
 
-    addNewShop();
+    window.viewPDF = (data) => {
+        const win = window.open();
+        win.document.write('<iframe src="' + data + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>');
+    };
+
+    addShop();
 </script>
 </body>
 </html>
-
