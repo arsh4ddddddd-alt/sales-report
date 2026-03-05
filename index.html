@@ -2,300 +2,265 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Global Sales System - Fix Edition</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DYNAPHARM - Sales Hub Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --bg: #f0f2f5; --card: white; --text: #333; --border: #ccc; --input-bg: white; }
-        .dark-mode { --bg: #18191a; --card: #242526; --text: #e4e6eb; --border: #3e4042; --input-bg: #3a3b3c; }
+        :root { --bg: #f8f9fa; --card: #ffffff; --text: #212529; --border: #dee2e6; --accent: #1a73e8; }
+        .dark-mode { --bg: #121212; --card: #1e1e1e; --text: #ffffff; --border: #333333; --accent: #4dabf7; }
 
-        body { font-family: -apple-system, sans-serif; padding: 10px; background: var(--bg); color: var(--text); padding-bottom: 80px; transition: 0.3s; }
-        .card { background: var(--card); padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 600px; margin: auto; }
-        h2 { text-align: center; color: #1a73e8; margin-top: 5px; text-transform: uppercase; font-size: 20px; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; transition: 0.3s; padding-bottom: 50px; }
+        .container { max-width: 500px; margin: auto; padding: 15px; }
         
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 10px; }
-        .btn-clear { background: #d93025; color: white; padding: 8px 12px; font-size: 11px; width: auto; margin: 0; }
-        .dark-toggle { width: auto; padding: 8px 12px; font-size: 11px; background: #333; color: white; margin: 0; }
+        /* Brand Header styling - dynapharm.sale.co.ke REMOVED */
+        .header-section { text-align: center; padding: 15px; background: var(--card); border-bottom: 2px solid #fd7e14; border-radius: 0 0 15px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        .brand-logo-text { color: #d32f2f; /* image_6.png red */ font-weight: bold; font-size: 28px; letter-spacing: 1px; margin: 0; }
+        .brand-subtitle { font-size: 11px; color: #555; margin: 2px 0 0; font-style: italic; }
 
-        /* Date Input Fix */
+        .app-controls { max-width: 500px; margin: 0 auto 15px; background: var(--card); padding: 10px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .header-btns { display: flex; justify-content: space-between; gap: 10px; }
+        .btn-clear { background: #fa5252; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 11px; flex: 1; }
+        .btn-theme { background: #495057; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 11px; flex: 1; }
+
+        h2 { text-align: center; color: var(--accent); margin: 15px 0; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .date-section { text-align: center; margin-bottom: 20px; }
         #reportDate { 
-            color: var(--text) !important; 
-            background: var(--input-bg) !important; 
-            border: 2px solid #1a73e8; 
-            font-weight: bold; 
-            text-align: center;
-            display: block;
-            margin: 0 auto;
+            width: 90%; max-width: 250px; padding: 12px; border: 2px solid var(--accent); border-radius: 8px; 
+            font-size: 16px; font-weight: bold; text-align: center; background: var(--card); color: var(--text); 
+            display: inline-block; -webkit-appearance: none;
         }
 
-        .shop-box { border: 2px solid #1a73e8; padding: 12px; border-radius: 8px; margin-bottom: 20px; background: var(--card); position: relative; }
-        .item-row { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr auto; gap: 5px; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 8px; align-items: end; }
+        .shop-box { border: 2px solid var(--accent); border-radius: 10px; padding: 12px; margin-bottom: 20px; position: relative; background: var(--card); }
+        .shop-name-input { width: 85%; padding: 10px; font-weight: bold; border: 1px solid var(--border); border-radius: 5px; margin-bottom: 10px; background: var(--card); color: var(--text); font-size: 16px;}
+        .remove-shop { position: absolute; top: -10px; right: 5px; background: #ff5252; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 10px; }
+
+        .product-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 40px; gap: 5px; margin-bottom: 10px; align-items: end; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+        .search-box { background: #fffde7; border: 1px solid #fbc02d; font-size: 11px; padding: 4px; border-radius: 4px; width: 100%; box-sizing: border-box; color: #000; margin-bottom: 3px; }
         
-        .search-inner { background: #fffde7; padding: 5px; border-radius: 4px; margin-bottom: 5px; border: 1px solid #fbc02d; font-size: 11px; width: 100%; box-sizing: border-box; color: #333; }
-        label { font-weight: bold; font-size: 10px; color: #666; display: block; margin-bottom: 2px; }
-        input, select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; box-sizing: border-box; background: var(--input-bg); color: var(--text); }
-        
-        button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 8px; }
-        .add-shop { background: #333; color: white; }
-        .load-all { background: #e67e22; color: white; margin-bottom: 10px; font-size: 14px; padding: 15px; } /* Bigger for mobile */
-        .add-item { background: #e8f0fe; color: #1a73e8; border: 1px dashed #1a73e8; }
-        .pdf-btn { background: #28a745; color: white; font-size: 18px; margin-top: 20px; }
-        .del-btn { background: #ffeded; color: #d93025; width: 35px; padding: 5px; font-size: 16px; border: 1px solid #f5c6cb; }
-        .shop-del { position: absolute; top: -10px; right: 10px; background: #d93025; color: white; width: auto; padding: 4px 10px; font-size: 11px; }
-        .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #888; border-top: 1px solid var(--border); padding-top: 10px; }
+        label { font-size: 9px; color: #888; display: block; margin-bottom: 2px; text-transform: uppercase; }
+        input, select { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 5px; background: var(--card); color: var(--text); font-size: 13px; box-sizing: border-box; }
+
+        .btn-load-all { background: #fd7e14; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; margin-bottom: 10px; width: 100%; font-size: 14px; }
+        .btn-add-one { background: #e7f5ff; color: #1a73e8; border: 1px dashed #1a73e8; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; }
+        .btn-pdf { background: #40c057; color: white; border: none; padding: 18px; border-radius: 10px; font-weight: bold; width: 100%; font-size: 18px; margin-top: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-del-item { color: #ff5252; background: none; border: none; font-size: 20px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <div class="top-bar">
-        <button class="btn-clear" onclick="clearEverything()">🗑️ START NEW REPORT</button>
-        <button class="dark-toggle" onclick="toggleDarkMode()">🌓 DARK MODE</button>
+<div class="header-section">
+    <div class="brand-logo-text">DYNAPHARM</div>
+    <div class="brand-subtitle">Distributor Hub Pro</div>
+</div>
+
+<div class="container">
+    <div class="app-controls">
+        <div class="header-btns">
+            <button class="btn-clear" onclick="startFresh()">🗑️ START NEW REPORT</button>
+            <button class="btn-theme" onclick="toggleMode()">🌓 THEME</button>
+        </div>
     </div>
 
-    <h2>Rapport des Ventes</h2>
-    <div style="text-align: center; margin-bottom: 15px;">
-        <label>Date du Rapport</label>
-        <input type="date" id="reportDate" onchange="saveAll()">
+    <h2>Global Sales System</h2>
+
+    <div class="date-section">
+        <label>DATE DU RAPPORT</label>
+        <input type="date" id="reportDate" onchange="autoSave()">
     </div>
 
-    <div id="shopsContainer"></div>
+    <div id="allShops"></div>
 
-    <button class="add-shop" onclick="addShop()">+ ADD NEW SHOP</button>
-    <button class="pdf-btn" onclick="generatePDF()">DOWNLOAD PDF REPORT</button>
+    <button style="background:#343a40; color:white; padding:15px; border-radius:10px; width:100%; font-weight:bold; margin-top:15px; font-size: 15px;" onclick="addNewShop()">+ AJOUTER BOUTIQUE</button>
+    <button class="btn-pdf" onclick="makePDF()">TÉLÉCHARGER PDF MODEL Model EXACT</button>
 
-    <div class="footer">
-        Developed by: <b>[ARSHAD]</b> | WhatsApp: <b>[+243902702275]</b>
+    <div style="text-align:center; margin-top:25px; font-size:11px; color:#aaa; border-top:1px solid #ddd; padding-top:10px;">
+        Developer & Support: <b>ARSHAD</b> | <b>+243 902 702 275</b>
     </div>
 </div>
 
 <script>
-    const products = [
-        {code: "DRC1201", name: "CAFE GINKO EN POUDRE ET GINSENG EN POUDR", price: 13.00},
-        {code: "DRC1202", name: "CAFÉ DE THE VERT AVEC POUDRE GANODERMA", price: 14.00},
-        {code: "DRC1203", name: "CAFÉ KACIP FATIMA AVEC POUDRE GANODERMA", price: 14.00},
-        {code: "DRC1204", name: "CAFE AVEC LA POUDRE DE TONGKAT ET MACCA", price: 14.00},
-        {code: "DRC1205", name: "CAFÉ CUPPUCCINO AVEC LA POUDRE GANODERMA", price: 15.00},
-        {code: "DRC1802A", name: "D.I. LIQUID ALFALFA PLUS GUARANA 500ML", price: 20.00},
-        {code: "DRC1804", name: "GANODERMA CAFE (20x21g)", price: 11.00},
-        {code: "DRC1810", name: "CAPUSLE DE YEE GANO 90s", price: 23.00},
-        {code: "DRC1811", name: "YEEGARLIC CAPSULE 90's", price: 23.00},
-        {code: "DRC1814", name: "GANODERMA CHOCOLAT (30'sX 30's)", price: 19.00},
-        {code: "DRC1817", name: "CAFÉ CHOIX DU PRESIDENT 4 EN 1", price: 15.00},
-        {code: "DRC1818", name: "CAFÉ NOIR GANODERMA ET TONGKATI ALI", price: 14.00},
-        {code: "DRC2802", name: "COMPRIMES DE LAIT DE CHEVRE 150's", price: 16.00},
-        {code: "DRC2804", name: "POUDRE INSTANTANEE DES GAINES DE SOJA", price: 17.00},
-        {code: "DRC2805", name: "MARINE SOLUBLE SPIRULLINA", price: 17.00},
-        {code: "DRC2807", name: "COMPRIME DE SPIRULINA (300's)", price: 22.00},
-        {code: "DRC2812", name: "HERBA WARISAN MAHARANI", price: 36.00},
-        {code: "DRC2813", name: "MELANGE INSTANTANE DE SOJA GINGEMBRE", price: 14.00},
-        {code: "DRC2814", name: "LAIT DE CHEVRE EN 1 ET POUDRE (PREMIX)", price: 15.00},
-        {code: "DRC3804", name: "DYNA TONIC 780ml", price: 33.00},
-        {code: "DRC3809", name: "YEE YANG YEN TABLET 90's", price: 23.00},
-        {code: "DRC3810", name: "RED COFFEE WITH GINSENG 12's x 25g", price: 13.00},
-        {code: "DRC3812", name: "GREEN TEA EXTRACT CAPSULE 60's", price: 23.00},
-        {code: "DRC3814", name: "PROLINK 20's x 20g", price: 36.00},
-        {code: "DRC4803", name: "GINSENG MIEL ET GINGEMBRE", price: 17.00},
-        {code: "DRC4805", name: "GINSENG CAPSULE 9 x 10's", price: 31.00},
-        {code: "DRC4810", name: "CAFÉ TONGKAT ALI (20x21g)", price: 11.00},
-        {code: "DRC4811", name: "GINALI CAPSULE 100's", price: 27.00},
-        {code: "DRC4815", name: "YEEGINKGO TABLET 90's", price: 23.00},
-        {code: "DRC4817", name: "MILK THISTLE TABLET 120's", price: 36.00},
-        {code: "DRC4821", name: "TONGKAT ALI CAPSULE 100's", price: 21.00},
-        {code: "DRC4824", name: "SEA CUCUMBER JELLY 500ml", price: 31.00},
-        {code: "DRC5802N", name: "NONI 500ml", price: 26.00},
-        {code: "DRC5803", name: "NONI PLUS TEA 30's x 3g", price: 19.00},
-        {code: "DRC5806", name: "DYNA 'S' TABLET 120's", price: 21.00},
-        {code: "DRC9918", name: "DYNA SERENOA TABLET 100's", price: 32.00}
-    ];
+// Main DYNAPHARM database (image_3.png based)
+const DB = [
+    {c:"DRC1201", n:"CAFE GINKO GINSENG", p:13}, {c:"DRC1202", n:"CAFE THE VERT GANO", p:14},
+    {c:"DRC1203", n:"CAFE KACIP FATIMA", p:14}, {c:"DRC1204", n:"CAFE TONGKAT MACCA", p:14},
+    {c:"DRC1205", n:"CAFE CUPPUCCINO GANO", p:15}, {c:"DRC1802A", n:"ALFALFA GUARANA 500ML", p:20},
+    {c:"DRC1804", n:"GANODERMA CAFE 20s", p:11}, {c:"DRC1810", n:"YEE GANO 90s", p:23},
+    {c:"DRC1811", n:"YEEGARLIC 90s", p:23}, {c:"DRC1814", n:"GANO CHOCOLAT 30s", p:19},
+    {c:"DRC1817", n:"CAFE PRESIDENT 4IN1", p:15}, {c:"DRC1818", n:"CAFE NOIR TONGKAT", p:14},
+    {c:"DRC2802", n:"LAIT CHEVRE TABS", p:16}, {c:"DRC2804", n:"SOJA POUDRE", p:17},
+    {c:"DRC2805", n:"SPIRULINA SOLUBLE", p:17}, {c:"DRC2807", n:"SPIRULINA 300s", p:22},
+    {c:"DRC2812", n:"MAHARANI", p:36}, {c:"DRC2813", n:"SOJA GINGEMBRE", p:14},
+    {c:"DRC2814", n:"LAIT CHEVRE PREMIX", p:15}, {c:"DRC3804", n:"DYNA TONIC 780ML", p:33},
+    {c:"DRC3809", n:"YEE YANG YEN 90s", p:23}, {c:"DRC3810", n:"RED COFFEE GINSENG", p:13},
+    {c:"DRC3812", n:"GREEN TEA CAPS", p:23}, {c:"DRC3814", n:"PROLINK 20s", p:36},
+    {c:"DRC4803", n:"GINSENG MIEL GINGEMBRE", p:17}, {c:"DRC4805", n:"GINSENG CAPS 90s", p:31},
+    {c:"DRC4810", n:"CAFE TONGKAT ALI 20s", p:11}, {c:"DRC4811", n:"GINALI 100s", p:27},
+    {c:"DRC4815", n:"YEEGINKGO 90s", p:23}, {c:"DRC4817", n:"MILK THISTLE 120s", p:36},
+    {c:"DRC4821", n:"TONGKAT ALI 100s", p:21}, {c:"DRC4824", n:"SEA CUCUMBER JELLY", p:31},
+    {c:"DRC5802N", n:"NONI 500ML", p:26}, {c:"DRC5803", n:"NONI TEA 30s", p:19},
+    {c:"DRC5806", n:"DYNA S 120s", p:21}, {c:"DRC9918", n:"SERENOA 100s", p:32}
+];
 
-    function toggleDarkMode() {
-        document.body.classList.toggle('dark-mode');
-        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+function toggleMode() {
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('mode', document.body.classList.contains('dark-mode'));
+}
+
+function startFresh() {
+    if(confirm("Effacer tout le rapport pour recommencer ?")) { localStorage.removeItem('dyna_data'); location.reload(); }
+}
+
+function addNewShop(data = null) {
+    const div = document.createElement('div');
+    div.className = 'shop-box';
+    div.innerHTML = `
+        <button class="remove-shop" onclick="this.parentElement.remove();autoSave()">SUPPRIMER X</button>
+        <input type="text" class="shop-name-input" placeholder="NOM DE LA BOUTIQUE" oninput="autoSave()">
+        <div class="product-list"></div>
+        <button class="btn-load-all" onclick="load36(this)">⚡ LOAD ALL PRODUCTS (36)</button>
+        <button class="btn-add-one" onclick="addOne(this)">+ AJOUTER PRODUIT</button>
+    `;
+    document.getElementById('allShops').appendChild(div);
+    if(data) {
+        div.querySelector('.shop-name-input').value = data.name;
+        data.items.forEach(i => addOne(div.querySelector('.btn-add-one'), i));
     }
+}
 
-    function clearEverything() {
-        if(confirm("Effacer tout le rapport en cours ?")) {
-            localStorage.removeItem('dynapharmData');
-            location.reload();
-        }
+function load36(btn) {
+    const list = btn.parentElement.querySelector('.product-list');
+    list.innerHTML = "";
+    DB.forEach(p => addOne(btn, {id: `${p.p}|${p.c}|${p.n}`, v:0, r:0}));
+    autoSave();
+}
+
+function addOne(btn, data = null) {
+    const list = btn.parentElement.querySelector('.product-list');
+    const row = document.createElement('div');
+    row.className = 'product-row';
+    let opts = DB.map(p => `<option value="${p.p}|${p.c}|${p.n}">${p.c} - ${p.n}</option>`).join('');
+    row.innerHTML = `
+        <div><label>Code</label><input type="text" class="search-box" placeholder="ex: 1201" oninput="filterP(this)"><select class="p-sel" onchange="updPrice(this);autoSave()">${opts}</select></div>
+        <div><label>Prix($)</label><input type="number" class="p-pri" readonly></div>
+        <div><label>Vendu</label><input type="number" class="p-sold" value="0" onfocus="this.select()" oninput="autoSave()" onkeydown="nav(event,'v')"></div>
+        <div><label>Reste</label><input type="number" class="p-rest" value="0" onfocus="this.select()" oninput="autoSave()" onkeydown="nav(event,'r')"></div>
+        <button class="btn-del-item" onclick="this.parentElement.remove();autoSave()">×</button>
+    `;
+    list.appendChild(row);
+    const s = row.querySelector('.p-sel');
+    if(data) { s.value = data.id; row.querySelector('.p-sold').value = data.v; row.querySelector('.p-rest').value = data.r; }
+    updPrice(s);
+}
+
+function updPrice(s) { s.parentElement.parentElement.querySelector('.p-pri').value = s.value.split('|')[0]; }
+
+function filterP(i) {
+    const v = i.value.toUpperCase(); const s = i.nextElementSibling;
+    Array.from(s.options).forEach(o => {
+        o.style.display = o.text.includes(v) ? "" : "none";
+        if(v && o.text.includes(v)) s.value = o.value;
+    });
+    updPrice(s); autoSave();
+}
+
+function nav(e, t) {
+    if(e.key === "Enter") {
+        const r = e.target.closest('.product-row');
+        if(t==='v') r.querySelector('.p-rest').focus();
+        else { const n = r.nextElementSibling; if(n) n.querySelector('.p-sold').focus(); }
     }
+}
 
-    function addShop(data = null) {
-        const container = document.getElementById('shopsContainer');
-        const div = document.createElement('div');
-        div.className = 'shop-box';
-        div.innerHTML = `
-            <button class="shop-del" onclick="this.parentElement.remove(); saveAll();">REMOVE SHOP</button>
-            <input type="text" class="shopName" placeholder="NOM DE LA BOUTIQUE" style="font-weight:bold; width:80%;" oninput="saveAll()">
-            <div class="items-list"></div>
-            <button class="load-all" onclick="loadAllProducts(this)">⚡ LOAD ALL PRODUCTS (36)</button>
-            <button class="add-item" onclick="addItem(this)">+ ADD ONE PRODUCT</button>
-        `;
-        container.appendChild(div);
-        if (data) {
-            div.querySelector('.shopName').value = data.name;
-            data.items.forEach(item => addItem(div.querySelector('.add-item'), item));
-        }
-    }
-
-    function loadAllProducts(btn) {
-        const list = btn.parentElement.querySelector('.items-list');
-        list.innerHTML = ""; 
-        products.forEach(p => {
-            addItem(btn, { val: `${p.price}|${p.code}|${p.name}`, sold: 0, stock: 0 });
+function autoSave() {
+    const shops = [];
+    document.querySelectorAll('.shop-box').forEach(b => {
+        const items = [];
+        b.querySelectorAll('.product-row').forEach(r => {
+            items.push({ id: r.querySelector('.p-sel').value, v: r.querySelector('.p-sold').value, r: r.querySelector('.p-rest').value });
         });
-        saveAll();
-    }
+        shops.push({ name: b.querySelector('.shop-name-input').value, items });
+    });
+    localStorage.setItem('dyna_data', JSON.stringify({ d: document.getElementById('reportDate').value, s: shops }));
+}
 
-    function addItem(btn, data = null) {
-        const list = btn.parentElement.querySelector('.items-list');
-        const row = document.createElement('div');
-        row.className = 'item-row';
-        let opts = products.map(p => `<option value="${p.price}|${p.code}|${p.name}">${p.code} - ${p.name}</option>`).join('');
-        row.innerHTML = `
-            <div>
-                <label>🔍 Code</label>
-                <input type="text" class="search-inner" placeholder="ex: 1201" oninput="filterLocalSelect(this)">
-                <select class="pData" onchange="updateRowPrice(this); saveAll();">${opts}</select>
-            </div>
-            <div><label>Prix($)</label><input type="number" class="pPrice" readonly></div>
-            <div><label>Vendu</label><input type="number" class="pSold" value="0" onfocus="this.select()" oninput="saveAll()" onkeydown="handleEnter(event, 'sold')"></div>
-            <div><label>Reste</label><input type="number" class="pStock" value="0" onfocus="this.select()" oninput="saveAll()" onkeydown="handleEnter(event, 'stock')"></div>
-            <button class="del-btn" onclick="this.parentElement.remove(); saveAll();">×</button>
-        `;
-        list.appendChild(row);
-        const sel = row.querySelector('.pData');
-        if (data) {
-            sel.value = data.val;
-            row.querySelector('.pSold').value = data.sold;
-            row.querySelector('.pStock').value = data.stock;
-        }
-        updateRowPrice(sel);
-    }
+window.onload = () => {
+    if(localStorage.getItem('mode')==='true') document.body.classList.add('dark-mode');
+    const saved = JSON.parse(localStorage.getItem('dyna_data'));
+    if(saved) { document.getElementById('reportDate').value = saved.d; saved.s.forEach(sh => addNewShop(sh)); }
+    else { document.getElementById('reportDate').valueAsDate = new Date(); addNewShop(); }
+};
 
-    function updateRowPrice(sel) {
-        sel.parentElement.parentElement.querySelector('.pPrice').value = sel.value.split('|')[0];
-    }
+// Generate Model Exact PDF (based on image_1.png layout)
+function makePDF() {
+    const { jsPDF } = window.jspdf; const doc = new jsPDF();
+    const dateInput = document.getElementById('reportDate').value;
 
-    function handleEnter(e, type) {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            const row = e.target.closest('.item-row');
-            if (type === 'sold') {
-                row.querySelector('.pStock').focus();
-            } else {
-                const nextRow = row.nextElementSibling;
-                if (nextRow) {
-                    nextRow.querySelector('.pSold').focus();
-                } else {
-                    const nextShop = row.closest('.shop-box').nextElementSibling;
-                    if (nextShop) {
-                        const firstInput = nextShop.querySelector('.pSold');
-                        if (firstInput) firstInput.focus();
-                    }
-                }
-            }
-        }
+    // Red geometric logo simulated using standard lines
+    function drawModelLogo(doc, x, y) {
+        doc.setLineWidth(0.8); doc.setDrawColor(211, 47, 47); // Red
+        for(let i=0; i<6; i++){ doc.line(x+i*2, y, x+i*2, y+10); } // vertical lines
+        doc.line(x, y+5, x+10, y+5); // cross bar
     }
+    drawModelLogo(doc, 14, 10);
+    
+    // Header text styling - dynapharm.sale.co.ke REMOVED
+    doc.setFontSize(16); doc.setTextColor(211, 47, 47); doc.setFont("helvetica", "bold"); 
+    doc.text("DYNAPHARM Distributors", 28, 17);
+    doc.setFontSize(8); doc.setTextColor(85, 85, 85); doc.setFont("helvetica", "italic"); 
+    doc.text("Global Distributors Hub Pro", 28, 21);
 
-    function filterLocalSelect(input) {
-        const val = input.value.toUpperCase();
-        const select = input.nextElementSibling;
-        Array.from(select.options).forEach(opt => {
-            opt.style.display = opt.text.toUpperCase().includes(val) ? "" : "none";
-            if (val !== "" && opt.text.toUpperCase().includes(val)) select.value = opt.value;
+    // Report title matching image_1.png
+    doc.setFontSize(16); doc.setTextColor(230, 126, 34); doc.setFont("helvetica", "bold"); 
+    doc.text("RECAPITULATION DES VENTES", 105, 30, {align:"center"});
+
+    doc.setFontSize(9); doc.setTextColor(0); doc.setFont("helvetica", "normal");
+    doc.text("Date ciblée: " + dateInput, 14, 38);
+    doc.setFont("helvetica", "italic"); doc.setFontSize(8);
+    doc.text("Ce document récapitule les ventes de toutes les boutiques pour la journée indiquée.", 14, 42);
+
+    let gTotal = 0; let summary = []; let details = [];
+    document.querySelectorAll('.shop-box').forEach(b => {
+        const sn = (b.querySelector('.shop-name-input').value || "SHOP").toUpperCase();
+        let sTotal = 0; let rows = [];
+        b.querySelectorAll('.product-row').forEach(r => {
+            const [pr, co, na] = r.querySelector('.p-sel').value.split('|');
+            const so = parseInt(r.querySelector('.p-sold').value) || 0;
+            const line = parseFloat(pr) * so; sTotal += line;
+            // Detailed rows matching image_1.png columns
+            rows.push([co, na, "$"+pr, so, r.querySelector('.p-rest').value, "$"+line.toFixed(2)]);
         });
-        updateRowPrice(select);
-        saveAll();
-    }
+        gTotal += sTotal; summary.push([sn, "$"+sTotal.toFixed(2)]);
+        details.push({sn, sTotal, rows});
+    });
 
-    function saveAll() {
-        const shops = [];
-        document.querySelectorAll('.shop-box').forEach(box => {
-            const items = [];
-            box.querySelectorAll('.item-row').forEach(row => {
-                items.push({
-                    val: row.querySelector('.pData').value,
-                    sold: row.querySelector('.pSold').value,
-                    stock: row.querySelector('.pStock').value
-                });
-            });
-            shops.push({ name: box.querySelector('.shopName').value, items });
+    // Main Summary Table (image_1.png color profile #fd7e14)
+    doc.autoTable({ 
+        startY: 46, 
+        head: [['Boutique', 'Total des Ventes ($)']], 
+        body: [...summary, [{content:'TOTAL GÉNÉRAL DU JOUR', styles:{fontStyle:'bold'}}, "$"+gTotal.toFixed(2)]], 
+        headStyles:{fillColor:[230, 126, 34]}, 
+        styles:{fontSize: 9} 
+    });
+    
+    // Details sections (image_1.png color profile #e74c4c)
+    let y = doc.lastAutoTable.finalY + 12;
+    details.forEach(s => {
+        if(y > 250) { doc.addPage(); y = 20; }
+        doc.setFontSize(12); doc.setTextColor(231, 76, 76); doc.setFont("helvetica", "bold");
+        doc.text(`DÉTAIL BOUTIQUE: ${s.sn} (Ventes = $${s.sTotal.toFixed(2)})`, 14, y);
+        doc.autoTable({ 
+            startY: y+3, 
+            head: [['Code', 'Nom', 'Prix U.', 'Vendu', 'Reste (Stock)', 'Total $']], 
+            body: s.rows, 
+            headStyles:{fillColor:[231, 76, 76]}, 
+            styles:{fontSize:8} 
         });
-        localStorage.setItem('dynapharmData', JSON.stringify({
-            date: document.getElementById('reportDate').value,
-            shops: shops
-        }));
-    }
-
-    window.onload = () => {
-        if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
-        const saved = JSON.parse(localStorage.getItem('dynapharmData'));
-        if (saved) {
-            document.getElementById('reportDate').value = saved.date;
-            saved.shops.forEach(s => addShop(s));
-        } else {
-            document.getElementById('reportDate').valueAsDate = new Date();
-            addShop();
-        }
-    };
-
-    function generatePDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        const date = document.getElementById('reportDate').value;
-        doc.setFontSize(16); doc.setTextColor(230, 126, 34);
-        doc.text("RAPPORT GLOBAL DES VENTES & INVENTAIRE", 105, 15, { align: "center" });
-        doc.setFontSize(10); doc.setTextColor(0);
-        doc.text("Date ciblée: " + date, 14, 25);
-        doc.setFont("helvetica", "italic");
-        doc.text("Ce document récapitule les ventes de toutes les boutiques pour la journée indiquée.", 14, 30);
-
-        let grandTotal = 0;
-        let summaries = [];
-        let details = [];
-
-        document.querySelectorAll('.shop-box').forEach(box => {
-            const name = (box.querySelector('.shopName').value || "SHOP").toUpperCase();
-            let shopTotal = 0;
-            let rows = [];
-            box.querySelectorAll('.item-row').forEach(row => {
-                const [price, code, pName] = row.querySelector('.pData').value.split('|');
-                const sold = parseInt(row.querySelector('.pSold').value) || 0;
-                const totalLine = parseFloat(price) * sold;
-                shopTotal += totalLine;
-                rows.push([code, pName, "$" + parseFloat(price).toFixed(2), sold, row.querySelector('.pStock').value, {content: "$" + totalLine.toFixed(2), styles: {fontStyle: 'bold'}}]);
-            });
-            grandTotal += shopTotal;
-            summaries.push([name, {content: "$" + shopTotal.toFixed(2), styles: {fontStyle: 'bold'}}]);
-            details.push({name, total: shopTotal, rows});
-        });
-
-        doc.autoTable({
-            startY: 40, head: [['Boutique', 'Total des Ventes ($)']],
-            body: [...summaries, [{content: 'TOTAL GÉNÉRAL DU JOUR', styles: {fontStyle: 'bold'}}, {content: "$" + grandTotal.toFixed(2), styles: {fontStyle: 'bold'}}]],
-            headStyles: { fillColor: [230, 126, 34] }
-        });
-
-        let currentY = doc.lastAutoTable.finalY + 15;
-        details.forEach(shop => {
-            if (currentY > 240) { doc.addPage(); currentY = 20; }
-            doc.setFontSize(12); doc.setTextColor(231, 76, 60); doc.setFont("helvetica", "bold");
-            doc.text(`DÉTAIL: ${shop.name} (Ventes = $${shop.total.toFixed(2)})`, 14, currentY);
-            doc.autoTable({
-                startY: currentY + 4,
-                head: [['Code', 'Désignation', 'Prix Unit.', 'Vendu', 'Reste (Stock)', 'Total $']],
-                body: shop.rows,
-                headStyles: { fillColor: [231, 76, 60] },
-                styles: { fontSize: 8 },
-                columnStyles: { 5: { fontStyle: 'bold' } }
-            });
-            currentY = doc.lastAutoTable.finalY + 15;
-        });
-        doc.save(`Global_Report_${date}.pdf`);
-    }
+        y = doc.lastAutoTable.finalY + 12;
+    });
+    doc.save(`RapportDynapharm_${dateInput}.pdf`);
+}
 </script>
 </body>
 </html>
