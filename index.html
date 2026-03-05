@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Dynapharm Global System</title>
+    <title>DYNAPHARM System</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -10,21 +10,15 @@
         :root { --bg: #f8f9fa; --card: #ffffff; --text: #212529; --border: #dee2e6; --accent: #1a73e8; }
         .dark-mode { --bg: #121212; --card: #1e1e1e; --text: #ffffff; --border: #333333; --accent: #4dabf7; }
 
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; transition: 0.3s; padding-bottom: 50px; }
-        .container { max-width: 500px; margin: auto; padding: 15px; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; transition: 0.3s; padding-bottom: 50px; }
+        .container { max-width: 500px; margin: auto; background: var(--card); padding: 15px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         
-        /* Brand Header with geometric logo simulated by red boxes and lines */
-        .header-section { text-align: center; padding: 20px; background: var(--card); border-bottom: 2px solid var(--accent); border-radius: 0 0 15px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 15px;}
-        .red-logo-icon { width: 50px; height: 50px; border: 4px solid #fa5252; border-radius: 6px; display: inline-block; position: relative; }
-        .red-logo-icon::before { content: ""; position: absolute; top: 10px; left: 10px; width: 22px; height: 22px; border: 4px solid #fa5252; border-radius: 4px; }
-        .red-logo-icon::after { content: ""; position: absolute; top: 18px; left: 18px; width: 6px; height: 6px; background: #fa5252; border-radius: 2px; }
+        .header-btns { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .btn-clear { background: #fa5252; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
+        .btn-theme { background: #495057; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
 
-        .app-controls { max-width: 500px; margin: 0 auto 15px; background: var(--card); padding: 10px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .header-btns { display: flex; justify-content: space-between; gap: 10px; }
-        .btn-clear { background: #fa5252; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; flex: 1; }
-        .btn-theme { background: #495057; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; flex: 1; }
-
-        h2 { text-align: center; color: var(--accent); margin: 15px 0; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; }
+        h1 { text-align: center; color: #d32f2f; margin: 10px 0; font-size: 28px; text-transform: uppercase; letter-spacing: 2px; }
+        h2 { text-align: center; color: var(--accent); margin: 5px 0 15px; font-size: 14px; text-transform: uppercase; }
 
         .date-section { text-align: center; margin-bottom: 20px; }
         #reportDate { 
@@ -33,8 +27,8 @@
             display: inline-block; -webkit-appearance: none;
         }
 
-        .shop-box { border: 2px solid var(--accent); border-radius: 10px; padding: 12px; margin-bottom: 20px; position: relative; background: var(--card); }
-        .shop-name-input { width: 85%; padding: 10px; font-weight: bold; border: 1px solid var(--border); border-radius: 5px; margin-bottom: 10px; background: var(--card); color: var(--text); font-size: 16px;}
+        .shop-box { border: 2px solid var(--accent); border-radius: 10px; padding: 12px; margin-bottom: 20px; position: relative; }
+        .shop-name-input { width: 85%; padding: 10px; font-weight: bold; border: 1px solid var(--border); border-radius: 5px; margin-bottom: 10px; background: var(--card); color: var(--text); }
         .remove-shop { position: absolute; top: -10px; right: 5px; background: #ff5252; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 10px; }
 
         .product-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 40px; gap: 5px; margin-bottom: 10px; align-items: end; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
@@ -43,27 +37,22 @@
         label { font-size: 9px; color: #888; display: block; margin-bottom: 2px; text-transform: uppercase; }
         input, select { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 5px; background: var(--card); color: var(--text); font-size: 13px; box-sizing: border-box; }
 
-        .btn-load-all { background: #fd7e14; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; margin-bottom: 10px; width: 100%; font-size: 14px; }
-        .btn-add-one { background: #e7f5ff; color: #1a73e8; border: 1px dashed #1a73e8; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; }
-        .btn-pdf { background: #40c057; color: white; border: none; padding: 18px; border-radius: 10px; font-weight: bold; width: 100%; font-size: 18px; margin-top: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-load-all { background: #fd7e14; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; margin-bottom: 10px; width: 100%; font-size: 14px; }
+        .btn-add-one { background: #e7f5ff; color: #1a73e8; border: 1px dashed #1a73e8; padding: 10px; border-radius: 8px; font-weight: bold; width: 100%; }
+        .btn-pdf { background: #40c057; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; width: 100%; font-size: 18px; margin-top: 20px; }
         .btn-del-item { color: #ff5252; background: none; border: none; font-size: 20px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="header-section">
-    <div class="red-logo-icon"></div>
-</div>
-
 <div class="container">
-    <div class="app-controls">
-        <div class="header-btns">
-            <button class="btn-clear" onclick="startFresh()">🗑️ START NEW REPORT</button>
-            <button class="btn-theme" onclick="toggleMode()">🌓 THEME</button>
-        </div>
+    <div class="header-btns">
+        <button class="btn-clear" onclick="startFresh()">🗑️ START NEW</button>
+        <button class="btn-theme" onclick="toggleMode()">🌓 THEME</button>
     </div>
 
-    <h2>Global Sales System</h2>
+    <h1>DYNAPHARM</h1>
+    <h2>Rapport de Ventes</h2>
 
     <div class="date-section">
         <label>DATE DU RAPPORT</label>
@@ -72,16 +61,15 @@
 
     <div id="allShops"></div>
 
-    <button style="background:#343a40; color:white; padding:15px; border-radius:10px; width:100%; font-weight:bold; margin-top:15px; font-size: 15px;" onclick="addNewShop()">+ AJOUTER BOUTIQUE</button>
-    <button class="btn-pdf" onclick="makePDF()">TÉLÉCHARGER PDF MODEL Model EXACT</button>
+    <button style="background:#343a40; color:white; padding:12px; border-radius:8px; width:100%; font-weight:bold; margin-top:10px;" onclick="addNewShop()">+ AJOUTER BOUTIQUE</button>
+    <button class="btn-pdf" onclick="makePDF()">TÉLÉCHARGER PDF</button>
 
-    <div style="text-align:center; margin-top:25px; font-size:11px; color:#aaa; border-top:1px solid #ddd; padding-top:10px;">
-        Developer & Support: <b>ARSHAD</b> | <b>+243 902 702 275</b>
+    <div style="text-align:center; margin-top:20px; font-size:10px; color:#888; border-top:1px solid #eee; padding-top:10px;">
+        Admin: <b>ARSHAD</b> | <b>+243 902 702 275</b>
     </div>
 </div>
 
 <script>
-// Corrected product database with clean syntax (image_3.png based)
 const DB = [
     {c:"DRC1201", n:"CAFE GINKO GINSENG", p:13}, {c:"DRC1202", n:"CAFE THE VERT GANO", p:14},
     {c:"DRC1203", n:"CAFE KACIP FATIMA", p:14}, {c:"DRC1204", n:"CAFE TONGKAT MACCA", p:14},
@@ -109,7 +97,7 @@ function toggleMode() {
 }
 
 function startFresh() {
-    if(confirm("Effacer tout le rapport pour recommencer ?")) { localStorage.removeItem('dyna_data'); location.reload(); }
+    if(confirm("Tout effacer ?")) { localStorage.removeItem('dyna_data'); location.reload(); }
 }
 
 function addNewShop(data = null) {
@@ -117,10 +105,10 @@ function addNewShop(data = null) {
     div.className = 'shop-box';
     div.innerHTML = `
         <button class="remove-shop" onclick="this.parentElement.remove();autoSave()">SUPPRIMER X</button>
-        <input type="text" class="shop-name-input" placeholder="NOM DE LA BOUTIQUE" oninput="autoSave()">
+        <input type="text" class="shop-name-input" placeholder="NOM BOUTIQUE" oninput="autoSave()">
         <div class="product-list"></div>
-        <button class="btn-load-all" onclick="load36(this)">⚡ LOAD ALL PRODUCTS (36)</button>
-        <button class="btn-add-one" onclick="addOne(this)">+ AJOUTER PRODUIT</button>
+        <button class="btn-load-all" onclick="load36(this)">⚡ CHARGER LES 36 PRODUITS</button>
+        <button class="btn-add-one" onclick="addOne(this)">+ AJOUTER UN PRODUIT</button>
     `;
     document.getElementById('allShops').appendChild(div);
     if(data) {
@@ -143,7 +131,7 @@ function addOne(btn, data = null) {
     let opts = DB.map(p => `<option value="${p.p}|${p.c}|${p.n}">${p.c} - ${p.n}</option>`).join('');
     row.innerHTML = `
         <div><label>Code</label><input type="text" class="search-box" placeholder="ex: 1201" oninput="filterP(this)"><select class="p-sel" onchange="updPrice(this);autoSave()">${opts}</select></div>
-        <div><label>Prix($)</label><input type="number" class="p-pri" readonly></div>
+        <div><label>Prix</label><input type="number" class="p-pri" readonly></div>
         <div><label>Vendu</label><input type="number" class="p-sold" value="0" onfocus="this.select()" oninput="autoSave()" onkeydown="nav(event,'v')"></div>
         <div><label>Reste</label><input type="number" class="p-rest" value="0" onfocus="this.select()" oninput="autoSave()" onkeydown="nav(event,'r')"></div>
         <button class="btn-del-item" onclick="this.parentElement.remove();autoSave()">×</button>
@@ -192,68 +180,36 @@ window.onload = () => {
     else { document.getElementById('reportDate').valueAsDate = new Date(); addNewShop(); }
 };
 
-// Generate Model Exact PDF (based on image_1.png layout)
 function makePDF() {
     const { jsPDF } = window.jspdf; const doc = new jsPDF();
-    const dateInput = document.getElementById('reportDate').value;
-
-    // Geometric logo simulated using standard lines
-    function drawModelLogo(doc, x, y) {
-        doc.setLineWidth(0.8); doc.setDrawColor(211, 47, 47); // Red
-        for(let i=0; i<6; i++){ doc.line(x+i*2, y, x+i*2, y+10); } // vertical lines
-        doc.line(x, y+5, x+10, y+5); // cross bar
-    }
-    drawModelLogo(doc, 14, 10);
-    
-    // Header title matching image_1.png
-    doc.setFontSize(16); doc.setTextColor(230, 126, 34); doc.setFont("helvetica", "bold"); 
-    doc.text("RECAPITULATION DES VENTES", 105, 17, {align:"center"});
-
-    doc.setFontSize(9); doc.setTextColor(0); doc.setFont("helvetica", "normal");
-    doc.text("Date ciblée: " + dateInput, 14, 25);
-    doc.setFont("helvetica", "italic"); doc.setFontSize(8);
-    doc.text("Ce document récapitule les ventes de toutes les boutiques pour la journée indiquée.", 14, 29);
+    const date = document.getElementById('reportDate').value;
+    doc.setFontSize(22); doc.setTextColor(211, 47, 47); doc.text("DYNAPHARM", 105, 15, {align:"center"});
+    doc.setFontSize(14); doc.setTextColor(0); doc.text("Rapport des Ventes - Date: " + date, 14, 25);
 
     let gTotal = 0; let summary = []; let details = [];
     document.querySelectorAll('.shop-box').forEach(b => {
-        const sn = (b.querySelector('.shop-name-input').value || "SHOP").toUpperCase();
+        const sn = (b.querySelector('.shop-name-input').value || "BOUTIQUE").toUpperCase();
         let sTotal = 0; let rows = [];
         b.querySelectorAll('.product-row').forEach(r => {
             const [pr, co, na] = r.querySelector('.p-sel').value.split('|');
             const so = parseInt(r.querySelector('.p-sold').value) || 0;
             const line = parseFloat(pr) * so; sTotal += line;
-            // Detailed rows matching image_1.png columns
             rows.push([co, na, "$"+pr, so, r.querySelector('.p-rest').value, "$"+line.toFixed(2)]);
         });
         gTotal += sTotal; summary.push([sn, "$"+sTotal.toFixed(2)]);
         details.push({sn, sTotal, rows});
     });
 
-    // Main Summary Table (image_1.png color profile #fd7e14)
-    doc.autoTable({ 
-        startY: 33, 
-        head: [['Boutique', 'Total des Ventes ($)']], 
-        body: [...summary, [{content:'TOTAL GÉNÉRAL DU JOUR', styles:{fontStyle:'bold'}}, "$"+gTotal.toFixed(2)]], 
-        headStyles:{fillColor:[230, 126, 34]}, 
-        styles:{fontSize: 9} 
-    });
+    doc.autoTable({ startY: 35, head: [['Boutique', 'Total ($)']], body: [...summary, [{content:'TOTAL GÉNÉRAL', styles:{fontStyle:'bold'}}, "$"+gTotal.toFixed(2)]], headStyles:{fillColor:[230,126,34]} });
     
-    // Details sections (image_1.png color profile #e74c4c)
-    let y = doc.lastAutoTable.finalY + 12;
+    let y = doc.lastAutoTable.finalY + 10;
     details.forEach(s => {
         if(y > 250) { doc.addPage(); y = 20; }
-        doc.setFontSize(12); doc.setTextColor(231, 76, 76); doc.setFont("helvetica", "bold");
-        doc.text(`DÉTAIL BOUTIQUE: ${s.sn} (Ventes = $${s.sTotal.toFixed(2)})`, 14, y);
-        doc.autoTable({ 
-            startY: y+3, 
-            head: [['Code', 'Nom', 'Prix U.', 'Vendu', 'Reste (Stock)', 'Total $']], 
-            body: s.rows, 
-            headStyles:{fillColor:[231, 76, 76]}, 
-            styles:{fontSize:8} 
-        });
-        y = doc.lastAutoTable.finalY + 12;
+        doc.setFontSize(11); doc.setTextColor(211, 47, 47); doc.text(`DÉTAILS: ${s.sn}`, 14, y);
+        doc.autoTable({ startY: y+2, head: [['Code', 'Nom', 'Prix', 'Vendu', 'Reste', 'Total']], body: s.rows, headStyles:{fillColor:[77,171,247]}, styles:{fontSize:8} });
+        y = doc.lastAutoTable.finalY + 10;
     });
-    doc.save(`RapportDynapharm_${dateInput}.pdf`);
+    doc.save(`Rapport_Dyna_${date}.pdf`);
 }
 </script>
 </body>
