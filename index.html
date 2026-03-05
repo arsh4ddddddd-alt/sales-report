@@ -2,24 +2,24 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>DYNAPHARM System - Version PDF Exacte</title>
+    <title>DYNAPHARM System - Fixed Search</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         body { font-family: -apple-system, sans-serif; padding: 10px; background: #f0f2f5; padding-bottom: 80px; }
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 650px; margin: auto; }
-        h2 { text-align: center; color: #1a73e8; text-transform: uppercase; font-size: 18px; margin-top: 5px; }
-        .search-box { background: #fffde7; padding: 10px; border-radius: 8px; border: 1px solid #ffd600; margin-bottom: 15px; }
+        h2 { text-align: center; color: #1a73e8; text-transform: uppercase; font-size: 18px; }
         .shop-box { border: 2px solid #1a73e8; padding: 12px; border-radius: 8px; margin-bottom: 20px; background: #fff; position: relative; }
         .item-row { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr auto; gap: 5px; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; align-items: end; }
+        .search-inner { background: #fff9c4; padding: 5px; border-radius: 4px; margin-bottom: 5px; border: 1px solid #fbc02d; font-size: 11px; }
         label { font-weight: bold; font-size: 9px; color: #666; display: block; }
         input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; box-sizing: border-box; }
         button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 8px; }
         .btn-add { background: #333; color: white; }
         .btn-item { background: #e8f0fe; color: #1a73e8; border: 1px dashed #1a73e8; }
         .pdf-btn { background: #28a745; color: white; font-size: 16px; margin-top: 20px; }
-        .del-btn { background: #ffeded; color: #d93025; width: 35px; height: 35px; padding: 0; }
+        .del-btn { background: #ffeded; color: #d93025; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
         .footer { text-align: center; margin-top: 30px; font-size: 11px; color: #888; border-top: 1px solid #ddd; padding-top: 10px; }
     </style>
 </head>
@@ -33,15 +33,10 @@
         <input type="date" id="reportDate">
     </div>
 
-    <div class="search-box">
-        <label>🔍 RECHERCHE RAPIDE PAR CODE (ex: DRC1201)</label>
-        <input type="text" id="masterSearch" placeholder="Entrez le code..." oninput="filterAllSelects()">
-    </div>
-
     <div id="shopsContainer"></div>
 
     <button class="btn-add" onclick="addShop()">+ AJOUTER UNE BOUTIQUE</button>
-    <button class="pdf-btn" onclick="generatePDF()">TÉLÉCHARGER LE RAPPORT PDF EXACT</button>
+    <button class="pdf-btn" onclick="generatePDF()">TÉLÉCHARGER LE RAPPORT PDF</button>
 
     <div class="footer">DÉVELOPPÉ PAR: <b>ARSHAD</b> | <b>+243 902 702 275</b></div>
 </div>
@@ -49,7 +44,6 @@
 <script>
     document.getElementById('reportDate').valueAsDate = new Date();
 
-    // Exact list in PDF order
     const products = [
         {code: "DRC1201", name: "CAFE GINKO EN POUDRE ET GINSENG", price: 13.00},
         {code: "DRC1202", name: "CAFÉ DE THE VERT AVEC POUDRE GANODERMA", price: 14.00},
@@ -69,7 +63,7 @@
         {code: "DRC2807", name: "COMPRIME DE SPIRULINA (300's)", price: 22.00},
         {code: "DRC2812", name: "HERBA WARISAN MAHARANI", price: 36.00},
         {code: "DRC2813", name: "MELANGE INSTANTANE DE SOJA GINGEMBRE", price: 14.00},
-        {code: "DRC2814", name: "LAIT DE CHEVRE EN 1 ET POUDRE", price: 15.00},
+        {code: "DRC2814", name: "LAIT DE CHEVRE EN 1 ET POUDRE (PREMIX)", price: 15.00},
         {code: "DRC3804", name: "DYNA TONIC 780ml", price: 33.00},
         {code: "DRC3809", name: "YEE YANG YEN TABLET 90's", price: 23.00},
         {code: "DRC3810", name: "RED COFFEE WITH GINSENG 12's", price: 13.00},
@@ -94,8 +88,8 @@
         const div = document.createElement('div');
         div.className = 'shop-box';
         div.innerHTML = `
-            <button style="position:absolute; top:5px; right:5px; background:red; color:white; width:auto; padding:3px 8px; font-size:10px;" onclick="this.parentElement.remove()">X</button>
-            <input type="text" class="shopName" placeholder="NOM DE LA BOUTIQUE (ex: KAPENDA)" style="font-weight:bold; width:80%; margin-bottom:10px;">
+            <button style="position:absolute; top:5px; right:5px; background:red; color:white; width:auto; padding:3px 8px; font-size:10px; border-radius:4px;" onclick="this.parentElement.remove()">SUPPRIMER</button>
+            <input type="text" class="shopName" placeholder="NOM DE LA BOUTIQUE" style="font-weight:bold; width:70%; margin-bottom:10px;">
             <div class="items-list"></div>
             <button class="btn-item" onclick="addItem(this)">+ AJOUTER PRODUIT</button>
         `;
@@ -107,29 +101,44 @@
         const list = btn.parentElement.querySelector('.items-list');
         const row = document.createElement('div');
         row.className = 'item-row';
+        
         let options = products.map(p => `<option value="${p.price}|${p.code}|${p.name}">${p.code} - ${p.name}</option>`).join('');
+        
         row.innerHTML = `
-            <div><label>Produit</label><select class="pData">${options}</select></div>
+            <div>
+                <label>🔍 Chercher Code</label>
+                <input type="text" class="search-inner" placeholder="ex: DRC1201" oninput="filterLocalSelect(this)">
+                <select class="pData">${options}</select>
+            </div>
             <div><label>Prix($)</label><input type="number" class="pPrice" readonly></div>
             <div><label>Vendu</label><input type="number" class="pSold" value="0" onfocus="this.select()"></div>
             <div><label>Reste</label><input type="number" class="pStock" value="0" onfocus="this.select()"></div>
             <button class="del-btn" onclick="this.parentElement.remove()">×</button>
         `;
         list.appendChild(row);
+        
         const sel = row.querySelector('.pData');
         sel.addEventListener('change', () => { row.querySelector('.pPrice').value = sel.value.split('|')[0]; });
         row.querySelector('.pPrice').value = sel.value.split('|')[0];
     }
 
-    function filterAllSelects() {
-        const val = document.getElementById('masterSearch').value.toUpperCase();
-        document.querySelectorAll('.pData').forEach(select => {
-            Array.from(select.options).forEach(opt => {
-                opt.style.display = opt.text.toUpperCase().includes(val) ? "" : "none";
-                if (opt.text.toUpperCase().includes(val)) select.value = opt.value;
-            });
-            select.dispatchEvent(new Event('change'));
+    function filterLocalSelect(input) {
+        const val = input.value.toUpperCase();
+        const select = input.nextElementSibling;
+        let found = false;
+        
+        Array.from(select.options).forEach(opt => {
+            if (opt.text.toUpperCase().includes(val)) {
+                opt.style.display = "";
+                if (!found && val !== "") { 
+                    select.value = opt.value; 
+                    found = true;
+                }
+            } else {
+                opt.style.display = "none";
+            }
         });
+        select.dispatchEvent(new Event('change'));
     }
 
     function generatePDF() {
@@ -137,13 +146,10 @@
         const doc = new jsPDF();
         const date = document.getElementById('reportDate').value;
 
-        // Header matching PDF exactly
         doc.setFontSize(16);
-        doc.setTextColor(0);
         doc.text("RAPPORT GLOBAL DES VENTES & INVENTAIRE", 105, 15, { align: "center" });
         doc.setFontSize(10);
         doc.text("Date ciblée: " + date, 14, 25);
-        doc.text("Ce document récapitule les ventes de toutes les boutiques pour la journée indiquée.", 14, 30);
 
         let grandTotal = 0;
         let summaries = [];
@@ -168,33 +174,29 @@
             details.push({name, total: shopTotal, rows});
         });
 
-        // Summary Table (Match source: 50)
         doc.autoTable({
-            startY: 40,
+            startY: 35,
             head: [['Boutique', 'Total des Ventes ($)']],
-            body: [...summaries, [{content: 'TOTAL GÉNÉRAL DU JOUR (TOUS SHOPS)', styles: {fontStyle: 'bold'}}, "$" + grandTotal.toFixed(2)]],
-            headStyles: { fillColor: [44, 62, 80] },
-            theme: 'grid'
+            body: [...summaries, [{content: 'TOTAL GÉNÉRAL DU JOUR', styles: {fontStyle: 'bold'}}, "$" + grandTotal.toFixed(2)]],
+            headStyles: { fillColor: [44, 62, 80] }
         });
 
-        // Detailed Tables (Match source: 52)
         let currentY = doc.lastAutoTable.finalY + 15;
         details.forEach(shop => {
             if (currentY > 240) { doc.addPage(); currentY = 20; }
-            doc.setFontSize(12);
+            doc.setFontSize(11);
             doc.text(`DÉTAIL: ${shop.name} (Ventes = $${shop.total.toFixed(2)})`, 14, currentY);
             doc.autoTable({
                 startY: currentY + 4,
                 head: [['Code', 'Désignation', 'Prix Unit.', 'Vendu', 'Reste (Stock)', 'Total $']],
                 body: shop.rows,
                 headStyles: { fillColor: [26, 115, 232] },
-                styles: { fontSize: 7 },
-                theme: 'striped'
+                styles: { fontSize: 7 }
             });
             currentY = doc.lastAutoTable.finalY + 15;
         });
 
-        doc.save(`Ventes_Globales_TousShops_${date}.pdf`);
+        doc.save(`Ventes_Globales_${date}.pdf`);
     }
 
     addShop();
