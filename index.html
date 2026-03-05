@@ -2,43 +2,45 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>DYNAPHARM System - Model Exact</title>
+    <title>Global Sales System - Master Edition</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        body { font-family: -apple-system, sans-serif; padding: 10px; background: #f4f7f6; color: #333; }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); max-width: 650px; margin: auto; }
-        h2 { text-align: center; color: #e67e22; text-transform: uppercase; font-size: 18px; margin-bottom: 20px; }
-        .shop-box { border-left: 5px solid #d32f2f; background: #fff; padding: 15px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; }
-        .item-row { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr auto; gap: 8px; margin-bottom: 12px; align-items: end; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .search-inner { background: #fffde7; padding: 8px; border-radius: 6px; border: 1px solid #fbc02d; font-size: 12px; width: 100%; box-sizing: border-box; margin-bottom: 5px; }
-        label { font-weight: bold; font-size: 10px; color: #777; display: block; margin-bottom: 4px; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.2s; }
-        .btn-add { background: #2c3e50; color: white; }
-        .btn-item { background: #fdf2f2; color: #d32f2f; border: 1px dashed #d32f2f; }
-        .pdf-btn { background: #27ae60; color: white; font-size: 16px; margin-top: 25px; box-shadow: 0 4px 10px rgba(39,174,96,0.3); }
-        .del-btn { background: none; color: #e74c3c; font-size: 24px; padding: 0; line-height: 1; margin-bottom: 5px; }
-        .footer { text-align: center; margin-top: 30px; font-size: 11px; color: #aaa; border-top: 1px solid #eee; padding-top: 15px; }
+        body { font-family: -apple-system, sans-serif; padding: 10px; background: #f0f2f5; padding-bottom: 80px; }
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 600px; margin: auto; }
+        h2 { text-align: center; color: #1a73e8; margin-top: 5px; text-transform: uppercase; font-size: 20px; }
+        .shop-box { border: 2px solid #1a73e8; padding: 12px; border-radius: 8px; margin-bottom: 20px; background: #fff; position: relative; }
+        .item-row { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr auto; gap: 5px; margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 8px; align-items: end; }
+        .search-inner { background: #fffde7; padding: 5px; border-radius: 4px; margin-bottom: 5px; border: 1px solid #fbc02d; font-size: 11px; width: 100%; box-sizing: border-box; }
+        label { font-weight: bold; font-size: 10px; color: #666; display: block; margin-bottom: 2px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 8px; }
+        .add-shop { background: #333; color: white; }
+        .add-item { background: #e8f0fe; color: #1a73e8; border: 1px dashed #1a73e8; }
+        .pdf-btn { background: #28a745; color: white; font-size: 18px; margin-top: 20px; }
+        .del-btn { background: #ffeded; color: #d93025; width: 35px; padding: 5px; font-size: 16px; border: 1px solid #f5c6cb; }
+        .shop-del { position: absolute; top: -10px; right: 10px; background: #d93025; color: white; width: auto; padding: 4px 10px; font-size: 11px; }
+        .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #888; border-top: 1px solid #ddd; padding-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>RAPPORT GLOBAL DES VENTES</h2>
-    
-    <div style="text-align: center; margin-bottom: 20px;">
+    <h2>Sales System</h2>
+    <div style="text-align: center; margin-bottom: 15px;">
         <label>Date du Rapport</label>
         <input type="date" id="reportDate">
     </div>
 
     <div id="shopsContainer"></div>
 
-    <button class="btn-add" onclick="addShop()">+ NOUVELLE BOUTIQUE</button>
-    <button class="pdf-btn" onclick="generatePDF()">GÉNÉRER LE PDF DU MODÈLE</button>
+    <button class="add-shop" onclick="addShop()">+ ADD NEW SHOP</button>
+    <button class="pdf-btn" onclick="generatePDF()">DOWNLOAD PDF REPORT</button>
 
-    <div class="footer">DÉVELOPPÉ PAR: <b>ARSHAD</b> | <b>+243 902 702 275</b></div>
+    <div class="footer">
+        Developed by: <b>[ARSHAD]</b> | WhatsApp: <b>[+243902702275]</b>
+    </div>
 </div>
 
 <script>
@@ -88,13 +90,13 @@
         const div = document.createElement('div');
         div.className = 'shop-box';
         div.innerHTML = `
-            <button style="position:absolute; top:8px; right:8px; background:none; color:#e74c3c; font-weight:bold; cursor:pointer;" onclick="this.parentElement.remove()">SUPPRIMER X</button>
-            <input type="text" class="shopName" placeholder="NOM DE LA BOUTIQUE (ex: KAPENDA)" style="font-weight:bold; border:none; border-bottom:2px solid #eee; width:60%; margin-bottom:15px; font-size:16px;">
+            <button class="shop-del" onclick="this.parentElement.remove()">REMOVE SHOP</button>
+            <input type="text" class="shopName" placeholder="SHOP NAME (e.g. BOTOUR)" style="font-weight:bold; width:80%;">
             <div class="items-list"></div>
-            <button class="btn-item" onclick="addItem(this)">+ AJOUTER UN PRODUIT</button>
+            <button class="add-item" onclick="addItem(this)">+ ADD PRODUCT</button>
         `;
         container.appendChild(div);
-        addItem(div.querySelector('.btn-item'));
+        addItem(div.querySelector('.add-item'));
     }
 
     function addItem(btn) {
@@ -104,7 +106,7 @@
         let options = products.map(p => `<option value="${p.price}|${p.code}|${p.name}">${p.code} - ${p.name}</option>`).join('');
         row.innerHTML = `
             <div>
-                <label>🔍 Code</label>
+                <label>🔍 Chercher Code</label>
                 <input type="text" class="search-inner" placeholder="ex: 1201" oninput="filterLocalSelect(this)">
                 <select class="pData">${options}</select>
             </div>
@@ -134,74 +136,71 @@
         const doc = new jsPDF();
         const date = document.getElementById('reportDate').value;
 
-        // Header - Model Orange
-        doc.setFontSize(18);
-        doc.setTextColor(230, 126, 34); 
-        doc.text("RAPPORT GLOBAL DES VENTES & INVENTAIRE", 105, 18, { align: "center" });
+        // Title - Orange
+        doc.setFontSize(16);
+        doc.setTextColor(230, 126, 34);
+        doc.text("RAPPORT GLOBAL DES VENTES & INVENTAIRE", 105, 15, { align: "center" });
 
         // Meta
         doc.setFontSize(10);
-        doc.setTextColor(40);
-        doc.text("Date ciblée: " + date, 14, 28);
+        doc.setTextColor(0);
+        doc.text("Date ciblée: " + date, 14, 25);
         doc.setFont("helvetica", "italic");
-        doc.text("Ce document récapitule les ventes de toutes les boutiques pour la journée indiquée.", 14, 33);
+        doc.text("Ce document récapitule les ventes de toutes les boutiques pour la journée indiquée.", 14, 30);
+        doc.setFont("helvetica", "normal");
 
         let grandTotal = 0;
         let summaries = [];
         let details = [];
 
         document.querySelectorAll('.shop-box').forEach(box => {
-            const name = (box.querySelector('.shopName').value || "BOUTIQUE").toUpperCase();
+            const name = (box.querySelector('.shopName').value || "SHOP").toUpperCase();
             let shopTotal = 0;
             let rows = [];
-
             box.querySelectorAll('.item-row').forEach(row => {
                 const [price, code, pName] = row.querySelector('.pData').value.split('|');
                 const sold = parseInt(row.querySelector('.pSold').value) || 0;
                 const stock = row.querySelector('.pStock').value || 0;
-                const totalLine = parseFloat(price) * sold;
-                shopTotal += totalLine;
-                rows.push([code, pName, "$" + parseFloat(price).toFixed(2), sold, stock, {content: "$" + totalLine.toFixed(2), styles: {fontStyle: 'bold'}}]);
+                const total = parseFloat(price) * sold;
+                shopTotal += total;
+                rows.push([code, pName, "$" + parseFloat(price).toFixed(2), sold, stock, {content: "$" + total.toFixed(2), styles: {fontStyle: 'bold'}}]);
             });
-
             grandTotal += shopTotal;
             summaries.push([name, {content: "$" + shopTotal.toFixed(2), styles: {fontStyle: 'bold'}}]);
             details.push({name, total: shopTotal, rows});
         });
 
-        // Summary - Orange Theme
+        // Summary - Orange
         doc.autoTable({
             startY: 40,
             head: [['Boutique', 'Total des Ventes ($)']],
             body: [...summaries, [{content: 'TOTAL GÉNÉRAL DU JOUR (TOUS SHOPS)', styles: {fontStyle: 'bold'}}, {content: "$" + grandTotal.toFixed(2), styles: {fontStyle: 'bold'}}]],
-            headStyles: { fillColor: [230, 126, 34] },
-            theme: 'grid'
+            headStyles: { fillColor: [230, 126, 34] }
         });
 
-        // Shop Details - Model Red Theme (200, 30, 30)
+        // Detail - Model Red (e74c3c)
         let currentY = doc.lastAutoTable.finalY + 15;
         details.forEach(shop => {
             if (currentY > 240) { doc.addPage(); currentY = 20; }
             doc.setFontSize(12);
-            doc.setTextColor(200, 30, 30); // Lighter Professional Red
+            doc.setTextColor(231, 76, 60); 
             doc.setFont("helvetica", "bold");
             doc.text(`DÉTAIL: ${shop.name} (Ventes = $${shop.total.toFixed(2)})`, 14, currentY);
-            
             doc.autoTable({
                 startY: currentY + 4,
                 head: [['Code', 'Désignation', 'Prix Unit.', 'Vendu', 'Reste (Stock)', 'Total $']],
                 body: shop.rows,
-                headStyles: { fillColor: [200, 30, 30] },
-                styles: { fontSize: 8, textColor: 0 },
-                columnStyles: { 5: { fontStyle: 'bold' } },
-                theme: 'striped'
+                headStyles: { fillColor: [231, 76, 60] },
+                styles: { fontSize: 8 },
+                columnStyles: { 5: { fontStyle: 'bold' } }
             });
             currentY = doc.lastAutoTable.finalY + 15;
         });
 
-        doc.save(`Ventes_Globales_${date}.pdf`);
+        doc.save(`Global_Report_${date}.pdf`);
     }
     addShop();
 </script>
 </body>
 </html>
+
