@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>DYNAPHARM - Sales Hub Pro</title>
+    <title>Dynapharm Global System</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -13,15 +13,16 @@
         body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; transition: 0.3s; padding-bottom: 50px; }
         .container { max-width: 500px; margin: auto; padding: 15px; }
         
-        /* Brand Header styling - dynapharm.sale.co.ke REMOVED */
-        .header-section { text-align: center; padding: 15px; background: var(--card); border-bottom: 2px solid #fd7e14; border-radius: 0 0 15px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 15px; }
-        .brand-logo-text { color: #d32f2f; /* image_6.png red */ font-weight: bold; font-size: 28px; letter-spacing: 1px; margin: 0; }
-        .brand-subtitle { font-size: 11px; color: #555; margin: 2px 0 0; font-style: italic; }
+        /* Brand Header with geometric logo simulated by red boxes and lines */
+        .header-section { text-align: center; padding: 20px; background: var(--card); border-bottom: 2px solid var(--accent); border-radius: 0 0 15px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 15px;}
+        .red-logo-icon { width: 50px; height: 50px; border: 4px solid #fa5252; border-radius: 6px; display: inline-block; position: relative; }
+        .red-logo-icon::before { content: ""; position: absolute; top: 10px; left: 10px; width: 22px; height: 22px; border: 4px solid #fa5252; border-radius: 4px; }
+        .red-logo-icon::after { content: ""; position: absolute; top: 18px; left: 18px; width: 6px; height: 6px; background: #fa5252; border-radius: 2px; }
 
         .app-controls { max-width: 500px; margin: 0 auto 15px; background: var(--card); padding: 10px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .header-btns { display: flex; justify-content: space-between; gap: 10px; }
-        .btn-clear { background: #fa5252; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 11px; flex: 1; }
-        .btn-theme { background: #495057; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 11px; flex: 1; }
+        .btn-clear { background: #fa5252; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; flex: 1; }
+        .btn-theme { background: #495057; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; flex: 1; }
 
         h2 { text-align: center; color: var(--accent); margin: 15px 0; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; }
 
@@ -51,8 +52,7 @@
 <body>
 
 <div class="header-section">
-    <div class="brand-logo-text">DYNAPHARM</div>
-    <div class="brand-subtitle">Distributor Hub Pro</div>
+    <div class="red-logo-icon"></div>
 </div>
 
 <div class="container">
@@ -81,7 +81,7 @@
 </div>
 
 <script>
-// Main DYNAPHARM database (image_3.png based)
+// Corrected product database with clean syntax (image_3.png based)
 const DB = [
     {c:"DRC1201", n:"CAFE GINKO GINSENG", p:13}, {c:"DRC1202", n:"CAFE THE VERT GANO", p:14},
     {c:"DRC1203", n:"CAFE KACIP FATIMA", p:14}, {c:"DRC1204", n:"CAFE TONGKAT MACCA", p:14},
@@ -197,7 +197,7 @@ function makePDF() {
     const { jsPDF } = window.jspdf; const doc = new jsPDF();
     const dateInput = document.getElementById('reportDate').value;
 
-    // Red geometric logo simulated using standard lines
+    // Geometric logo simulated using standard lines
     function drawModelLogo(doc, x, y) {
         doc.setLineWidth(0.8); doc.setDrawColor(211, 47, 47); // Red
         for(let i=0; i<6; i++){ doc.line(x+i*2, y, x+i*2, y+10); } // vertical lines
@@ -205,20 +205,14 @@ function makePDF() {
     }
     drawModelLogo(doc, 14, 10);
     
-    // Header text styling - dynapharm.sale.co.ke REMOVED
-    doc.setFontSize(16); doc.setTextColor(211, 47, 47); doc.setFont("helvetica", "bold"); 
-    doc.text("DYNAPHARM Distributors", 28, 17);
-    doc.setFontSize(8); doc.setTextColor(85, 85, 85); doc.setFont("helvetica", "italic"); 
-    doc.text("Global Distributors Hub Pro", 28, 21);
-
-    // Report title matching image_1.png
+    // Header title matching image_1.png
     doc.setFontSize(16); doc.setTextColor(230, 126, 34); doc.setFont("helvetica", "bold"); 
-    doc.text("RECAPITULATION DES VENTES", 105, 30, {align:"center"});
+    doc.text("RECAPITULATION DES VENTES", 105, 17, {align:"center"});
 
     doc.setFontSize(9); doc.setTextColor(0); doc.setFont("helvetica", "normal");
-    doc.text("Date ciblée: " + dateInput, 14, 38);
+    doc.text("Date ciblée: " + dateInput, 14, 25);
     doc.setFont("helvetica", "italic"); doc.setFontSize(8);
-    doc.text("Ce document récapitule les ventes de toutes les boutiques pour la journée indiquée.", 14, 42);
+    doc.text("Ce document récapitule les ventes de toutes les boutiques pour la journée indiquée.", 14, 29);
 
     let gTotal = 0; let summary = []; let details = [];
     document.querySelectorAll('.shop-box').forEach(b => {
@@ -237,7 +231,7 @@ function makePDF() {
 
     // Main Summary Table (image_1.png color profile #fd7e14)
     doc.autoTable({ 
-        startY: 46, 
+        startY: 33, 
         head: [['Boutique', 'Total des Ventes ($)']], 
         body: [...summary, [{content:'TOTAL GÉNÉRAL DU JOUR', styles:{fontStyle:'bold'}}, "$"+gTotal.toFixed(2)]], 
         headStyles:{fillColor:[230, 126, 34]}, 
