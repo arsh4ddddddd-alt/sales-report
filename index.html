@@ -2,54 +2,56 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>DYNAPHARM</title>
+    <title>Dynapharm Global System</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --bg: #f8f9fa; --card: #ffffff; --text: #212529; --border: #dee2e6; --accent: #d32f2f; }
-        .dark-mode { --bg: #121212; --card: #1e1e1e; --text: #ffffff; --border: #333333; --accent: #ff5252; }
+        :root { --bg: #f8f9fa; --card: #ffffff; --text: #212529; --border: #dee2e6; --accent: #1a73e8; }
+        .dark-mode { --bg: #121212; --card: #1e1e1e; --text: #ffffff; --border: #333333; --accent: #4dabf7; }
 
         body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; transition: 0.3s; padding-bottom: 50px; }
-        .container { max-width: 500px; margin: auto; background: var(--card); padding: 15px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .container { max-width: 500px; margin: auto; background: var(--card); padding: 15px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         
-        .top-nav { display: flex; justify-content: space-between; margin-bottom: 15px; }
-        .btn-ui { background: #495057; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
+        .header-btns { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .btn-clear { background: #fa5252; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
+        .btn-theme { background: #495057; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
 
-        h1 { text-align: center; color: #d32f2f; margin: 10px 0; font-size: 32px; font-weight: 900; letter-spacing: 2px; }
-        h2 { text-align: center; color: #666; margin: 0 0 20px; font-size: 14px; text-transform: uppercase; }
+        h2 { text-align: center; color: var(--accent); margin: 10px 0; font-size: 22px; text-transform: uppercase; }
 
-        .date-section { text-align: center; margin-bottom: 25px; }
+        /* FIXED DATE BOX */
+        .date-section { text-align: center; margin-bottom: 20px; }
         #reportDate { 
-            width: 80%; padding: 12px; border: 2px solid #d32f2f; border-radius: 8px; 
-            font-size: 16px; font-weight: bold; text-align: center; background: var(--card); color: var(--text);
+            width: 90%; max-width: 250px; padding: 12px; border: 2px solid var(--accent); border-radius: 8px; 
+            font-size: 16px; font-weight: bold; text-align: center; background: var(--card); color: var(--text); 
+            display: inline-block; -webkit-appearance: none;
         }
 
-        .shop-box { border: 2px solid #dee2e6; border-radius: 10px; padding: 12px; margin-bottom: 25px; position: relative; }
-        .shop-name-input { width: 80%; padding: 10px; font-weight: bold; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 15px; font-size: 16px; }
-        .remove-shop { position: absolute; top: 10px; right: 10px; background: #ff5252; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        .shop-box { border: 2px solid var(--accent); border-radius: 10px; padding: 12px; margin-bottom: 20px; position: relative; }
+        .shop-name-input { width: 85%; padding: 10px; font-weight: bold; border: 1px solid var(--border); border-radius: 5px; margin-bottom: 10px; background: var(--card); color: var(--text); }
+        .remove-shop { position: absolute; top: -10px; right: 5px; background: #ff5252; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 10px; }
 
-        .product-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 40px; gap: 5px; margin-bottom: 12px; align-items: end; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .search-box { background: #fff9db; border: 1px solid #fab005; font-size: 11px; padding: 5px; border-radius: 4px; width: 100%; margin-bottom: 3px; }
+        .product-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 40px; gap: 5px; margin-bottom: 10px; align-items: end; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+        .search-box { background: #fffde7; border: 1px solid #fbc02d; font-size: 11px; padding: 4px; border-radius: 4px; width: 100%; box-sizing: border-box; color: #000; margin-bottom: 3px; }
         
-        label { font-size: 9px; color: #888; display: block; margin-bottom: 2px; }
-        input, select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; background: var(--card); color: var(--text); font-size: 14px; }
+        label { font-size: 9px; color: #888; display: block; margin-bottom: 2px; text-transform: uppercase; }
+        input, select { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 5px; background: var(--card); color: var(--text); font-size: 13px; box-sizing: border-box; }
 
-        .btn-main { background: #d32f2f; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; width: 100%; font-size: 16px; cursor: pointer; margin-top: 10px; }
-        .btn-add { background: #e7f5ff; color: #1a73e8; border: 1px dashed #1a73e8; padding: 10px; border-radius: 8px; width: 100%; font-weight: bold; margin-bottom: 10px; }
-        .btn-pdf { background: #2f9e44; color: white; border: none; padding: 18px; border-radius: 10px; font-weight: bold; width: 100%; font-size: 18px; margin-top: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-load-all { background: #fd7e14; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; margin-bottom: 10px; width: 100%; font-size: 14px; }
+        .btn-add-one { background: #e7f5ff; color: #1a73e8; border: 1px dashed #1a73e8; padding: 10px; border-radius: 8px; font-weight: bold; width: 100%; }
+        .btn-pdf { background: #40c057; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; width: 100%; font-size: 18px; margin-top: 20px; }
+        .btn-del-item { color: #ff5252; background: none; border: none; font-size: 20px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="top-nav">
-        <button class="btn-ui" onclick="startFresh()">🗑️ NOUVEAU</button>
-        <button class="btn-ui" onclick="toggleMode()">🌓 THEME</button>
+    <div class="header-btns">
+        <button class="btn-clear" onclick="startFresh()">🗑️ START NEW</button>
+        <button class="btn-theme" onclick="toggleMode()">🌓 THEME</button>
     </div>
 
-    <h1>DYNAPHARM</h1>
-    <h2>Rapport de Ventes Global</h2>
+    <h2>Rapport Ventes</h2>
 
     <div class="date-section">
         <label>DATE DU RAPPORT</label>
@@ -58,16 +60,15 @@
 
     <div id="allShops"></div>
 
-    <button class="btn-main" onclick="addNewShop()">+ AJOUTER UNE BOUTIQUE</button>
-    <button class="btn-pdf" onclick="makePDF()">TÉLÉCHARGER LE RAPPORT PDF</button>
+    <button style="background:#343a40; color:white; padding:12px; border-radius:8px; width:100%; font-weight:bold; margin-top:10px;" onclick="addNewShop()">+ AJOUTER BOUTIQUE</button>
+    <button class="btn-pdf" onclick="makePDF()">TÉLÉCHARGER PDF</button>
 
-    <div style="text-align:center; margin-top:30px; font-size:10px; color:#aaa;">
-        Admin Support: <b>ARSHAD</b> | <b>+243 902 702 275</b>
+    <div style="text-align:center; margin-top:20px; font-size:10px; color:#888; border-top:1px solid #eee; padding-top:10px;">
+        Admin: <b>ARSHAD</b> | <b>+243 902 702 275</b>
     </div>
 </div>
 
 <script>
-[span_2](start_span)[span_3](start_span)// Official product list matching your recent inventory[span_2](end_span)[span_3](end_span)
 const DB = [
     {c:"DRC1201", n:"CAFE GINKO GINSENG", p:13}, {c:"DRC1202", n:"CAFE THE VERT GANO", p:14},
     {c:"DRC1203", n:"CAFE KACIP FATIMA", p:14}, {c:"DRC1204", n:"CAFE TONGKAT MACCA", p:14},
@@ -95,27 +96,27 @@ function toggleMode() {
 }
 
 function startFresh() {
-    if(confirm("Effacer tout le rapport en cours ?")) { localStorage.removeItem('dyna_data'); location.reload(); }
+    if(confirm("Tout effacer ?")) { localStorage.removeItem('dyna_data'); location.reload(); }
 }
 
 function addNewShop(data = null) {
     const div = document.createElement('div');
     div.className = 'shop-box';
     div.innerHTML = `
-        <button class="remove-shop" onclick="this.parentElement.remove();autoSave()">X</button>
-        <input type="text" class="shop-name-input" placeholder="NOM DE LA BOUTIQUE" oninput="autoSave()">
+        <button class="remove-shop" onclick="this.parentElement.remove();autoSave()">SUPPRIMER X</button>
+        <input type="text" class="shop-name-input" placeholder="NOM BOUTIQUE" oninput="autoSave()">
         <div class="product-list"></div>
-        <button class="btn-main" style="background:#fd7e14; margin-bottom:10px;" onclick="loadAll(this)">⚡ CHARGER TOUS LES PRODUITS</button>
-        <button class="btn-add" onclick="addOne(this)">+ UN SEUL PRODUIT</button>
+        <button class="btn-load-all" onclick="load36(this)">⚡ LOAD ALL PRODUCTS (36)</button>
+        <button class="btn-add-one" onclick="addOne(this)">+ AJOUTER PRODUIT</button>
     `;
     document.getElementById('allShops').appendChild(div);
     if(data) {
         div.querySelector('.shop-name-input').value = data.name;
-        data.items.forEach(i => addOne(div.querySelector('.btn-add'), i));
+        data.items.forEach(i => addOne(div.querySelector('.btn-add-one'), i));
     }
 }
 
-function loadAll(btn) {
+function load36(btn) {
     const list = btn.parentElement.querySelector('.product-list');
     list.innerHTML = "";
     DB.forEach(p => addOne(btn, {id: `${p.p}|${p.c}|${p.n}`, v:0, r:0}));
@@ -128,11 +129,11 @@ function addOne(btn, data = null) {
     row.className = 'product-row';
     let opts = DB.map(p => `<option value="${p.p}|${p.c}|${p.n}">${p.c} - ${p.n}</option>`).join('');
     row.innerHTML = `
-        <div><label>Chercher</label><input type="text" class="search-box" placeholder="Code" oninput="filterP(this)"><select class="p-sel" onchange="updPrice(this);autoSave()">${opts}</select></div>
+        <div><label>Code</label><input type="text" class="search-box" placeholder="ex: 1201" oninput="filterP(this)"><select class="p-sel" onchange="updPrice(this);autoSave()">${opts}</select></div>
         <div><label>Prix</label><input type="number" class="p-pri" readonly></div>
         <div><label>Vendu</label><input type="number" class="p-sold" value="0" onfocus="this.select()" oninput="autoSave()" onkeydown="nav(event,'v')"></div>
         <div><label>Reste</label><input type="number" class="p-rest" value="0" onfocus="this.select()" oninput="autoSave()" onkeydown="nav(event,'r')"></div>
-        <button style="color:red; background:none; border:none; font-size:20px;" onclick="this.parentElement.remove();autoSave()">×</button>
+        <button class="btn-del-item" onclick="this.parentElement.remove();autoSave()">×</button>
     `;
     list.appendChild(row);
     const s = row.querySelector('.p-sel');
@@ -181,13 +182,12 @@ window.onload = () => {
 function makePDF() {
     const { jsPDF } = window.jspdf; const doc = new jsPDF();
     const date = document.getElementById('reportDate').value;
-    
-    doc.setFontSize(26); doc.setTextColor(211, 47, 47); doc.text("DYNAPHARM", 105, 15, {align:"center"});
-    doc.setFontSize(12); doc.setTextColor(100); doc.text("Rapport de Ventes - " + date, 105, 22, {align:"center"});
+    doc.setFontSize(16); doc.setTextColor(230, 126, 34); doc.text("RAPPORT DYNAPHARM", 105, 15, {align:"center"});
+    doc.setFontSize(10); doc.setTextColor(0); doc.text("Date: " + date, 14, 25);
 
     let gTotal = 0; let summary = []; let details = [];
     document.querySelectorAll('.shop-box').forEach(b => {
-        const sn = (b.querySelector('.shop-name-input').value || "BOUTIQUE").toUpperCase();
+        const sn = (b.querySelector('.shop-name-input').value || "SHOP").toUpperCase();
         let sTotal = 0; let rows = [];
         b.querySelectorAll('.product-row').forEach(r => {
             const [pr, co, na] = r.querySelector('.p-sel').value.split('|');
@@ -199,16 +199,16 @@ function makePDF() {
         details.push({sn, sTotal, rows});
     });
 
-    doc.autoTable({ startY: 30, head: [['Boutique', 'Total Ventes ($)']], body: [...summary, [{content:'TOTAL GÉNÉRAL', styles:{fontStyle:'bold'}}, "$"+gTotal.toFixed(2)]], headStyles:{fillColor:[211, 47, 47]} });
+    doc.autoTable({ startY: 35, head: [['Boutique', 'Total ($)']], body: [...summary, [{content:'TOTAL GLOBAL', styles:{fontStyle:'bold'}}, "$"+gTotal.toFixed(2)]], headStyles:{fillColor:[230,126,34]} });
     
-    let y = doc.lastAutoTable.finalY + 15;
+    let y = doc.lastAutoTable.finalY + 10;
     details.forEach(s => {
         if(y > 250) { doc.addPage(); y = 20; }
-        doc.setFontSize(14); doc.setTextColor(211, 47, 47); doc.text(`DÉTAIL: ${s.sn}`, 14, y);
-        doc.autoTable({ startY: y+3, head: [['Code', 'Produit', 'Prix', 'Vendu', 'Reste', 'Total']], body: s.rows, headStyles:{fillColor:[52, 58, 64]}, styles:{fontSize:8} });
-        y = doc.lastAutoTable.finalY + 15;
+        doc.setFontSize(11); doc.text(`DETAIL: ${s.sn}`, 14, y);
+        doc.autoTable({ startY: y+2, head: [['Code', 'Nom', 'Prix', 'Vendu', 'Reste', 'Total']], body: s.rows, headStyles:{fillColor:[77,171,247]}, styles:{fontSize:8} });
+        y = doc.lastAutoTable.finalY + 10;
     });
-    doc.save(`Dyna_Report_${date}.pdf`);
+    doc.save(`Rapport_${date}.pdf`);
 }
 </script>
 </body>
