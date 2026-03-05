@@ -2,145 +2,170 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DYNAPHARM CLOUD SYSTEM</title>
+    <title>DYNAPHARM Sales System</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAQoBJhPYyYfvPSWsWse3OgfMxNmd24iXQ",
-            authDomain: "business-arshad.firebaseapp.com",
-            projectId: "business-arshad",
-            storageBucket: "business-arshad.firebasestorage.app",
-            messagingSenderId: "1097198781152",
-            appId: "1:1097198781152:web:67f22b2dc944c93b240685"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // SAVE REPORT + PDF STRING
-        window.saveToCloud = async (reportData) => {
-            try {
-                await addDoc(collection(db, "sales_reports"), reportData);
-                return true;
-            } catch (e) {
-                alert("Cloud Error: " + e.message);
-                return false;
-            }
-        };
-
-        // FETCH REPORTS TO VIEW
-        window.loadHistory = async () => {
-            const hList = document.getElementById('historyList');
-            hList.innerHTML = "Loading...";
-            try {
-                const q = query(collection(db, "sales_reports"), orderBy("timestamp", "desc"), limit(5));
-                const querySnapshot = await getDocs(q);
-                hList.innerHTML = "";
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const item = document.createElement('div');
-                    item.className = 'history-item';
-                    item.innerHTML = `
-                        <span><b>${data.date}</b> - $${data.total.toFixed(2)}</span>
-                        <button onclick="viewPDF('${data.pdfData}')">VIEW PDF</button>
-                    `;
-                    hList.appendChild(item);
-                });
-            } catch (e) { hList.innerHTML = "No reports found yet."; }
-        };
-    </script>
-
     <style>
-        body { font-family: sans-serif; padding: 15px; background: #f0f2f5; }
-        .card { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .btn-main { background: #28a745; color: white; font-size: 16px; }
-        .btn-history { background: #1a73e8; color: white; margin-top: 20px; }
-        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; }
-        .history-item button { width: auto; padding: 5px 10px; margin: 0; font-size: 11px; background: #eee; }
-        .footer { text-align: center; margin-top: 20px; font-size: 11px; color: #888; }
+        body { font-family: -apple-system, sans-serif; padding: 10px; background: #f0f2f5; color: #333; }
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 600px; margin: auto; }
+        h2 { text-align: center; color: #1a73e8; text-transform: uppercase; font-size: 20px; margin-bottom: 20px; }
+        .shop-box { border: 2px solid #1a73e8; padding: 12px; border-radius: 8px; margin-bottom: 20px; background: #fff; position: relative; }
+        .item-row { display: grid; grid-template-columns: 2.5fr 1fr 1fr auto; gap: 5px; margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 8px; align-items: end; }
+        label { font-weight: bold; font-size: 10px; color: #666; display: block; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 8px; }
+        .add-shop { background: #333; color: white; }
+        .add-item { background: #e8f0fe; color: #1a73e8; border: 1px dashed #1a73e8; }
+        .pdf-btn { background: #28a745; color: white; font-size: 18px; margin-top: 20px; }
+        .del-btn { background: #ffeded; color: #d93025; width: 35px; padding: 5px; }
+        .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #888; border-top: 1px solid #ddd; padding-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2 style="text-align:center; color:#1a73e8;">DYNAPHARM CLOUD</h2>
-    <label>Date</label>
-    <input type="date" id="reportDate">
+    <h2>DYNAPHARM Sales Report</h2>
+    
+    <div style="text-align: center; margin-bottom: 15px;">
+        <label>Select Date</label>
+        <input type="date" id="reportDate">
+    </div>
 
-    <div id="shopContainer"></div>
-    <button onclick="addShop()" style="background:#333; color:white;">+ ADD SHOP</button>
-    <button id="mainBtn" class="btn-main" onclick="generateAndSave()">SAVE TO CLOUD & DOWNLOAD</button>
+    <div id="shopsContainer"></div>
 
-    <button class="btn-history" onclick="loadHistory()">🔄 VIEW RECENT REPORTS FROM CLOUD</button>
-    <div id="historyList"></div>
+    <button class="add-shop" onclick="addShop()">+ ADD NEW SHOP</button>
+    <button class="pdf-btn" onclick="generatePDF()">DOWNLOAD PDF REPORT</button>
 
-    <div class="footer">Developed by: ARSHAD | +243 902 702 275</div>
+    <div class="footer">
+        Developed by: <b>ARSHAD</b><br>
+        WhatsApp: <b>+243 902 702 275</b>
+    </div>
 </div>
 
 <script>
     document.getElementById('reportDate').valueAsDate = new Date();
 
+    const products = [
+        {code: "DRC1201", name: "CAFE GINKO EN POUDRE", price: 13.00},
+        {code: "DRC1202", name: "CAFE THE VERT GANODERMA", price: 14.00},
+        {code: "DRC1203", name: "CAFE KACIP FATIMA", price: 14.00},
+        {code: "DRC1204", name: "CAFE TONGKAT ET MACCA", price: 14.00},
+        {code: "DRC1205", name: "CAFE CAPPUCCINO GANODERMA", price: 15.00},
+        {code: "DRC1802A", name: "D.I. LIQUID ALFALFA 500ML", price: 20.00},
+        {code: "DRC1804", name: "GANODERMA CAFE (20x21g)", price: 11.00},
+        {code: "DRC1810", name: "CAPSULE DE YEE GANO 90's", price: 23.00},
+        {code: "DRC1811", name: "YEEGARLIC CAPSULE 90's", price: 23.00},
+        {code: "DRC1814", name: "GANODERMA CHOCOLAT", price: 19.00},
+        {code: "DRC1817", name: "CAFE CHOIX DU PRESIDENT", price: 15.00},
+        {code: "DRC1818", name: "CAFE NOIR GANODERMA", price: 12.00},
+        {code: "DRC2802", name: "COMPRIMES LAIT DE CHEVRE", price: 18.00},
+        {code: "DRC2804", name: "POUDRE GRAINES DE SOJA", price: 14.00},
+        {code: "DRC2805", name: "MARINE SOLUBLE SPIRULINA", price: 25.00},
+        {code: "DRC2807", name: "COMPRIME SPIRULINA (300)", price: 30.00},
+        {code: "DRC2812", name: "HERBA WARISAN MAHARANI", price: 36.00},
+        {code: "DRC2813", name: "SOJA GINGEMBRE", price: 14.00},
+        {code: "DRC2814", name: "LAIT DE CHEVRE 1 ET POUDRE", price: 18.00},
+        {code: "DRC3804", name: "DYNA TONIC 780ml", price: 33.00},
+        {code: "DRC3809", name: "YEE YANG YEN TABLET 90's", price: 25.00},
+        {code: "DRC3810", name: "RED COFFEE GINSENG", price: 12.00},
+        {code: "DRC3812", name: "GREEN TEA EXTRACT CAPSULE", price: 22.00},
+        {code: "DRC3814", name: "PROLINK 20's x 20g", price: 20.00},
+        {code: "DRC4803", name: "GINSENG MIEL GINGEMBRE", price: 15.00},
+        {code: "DRC4805", name: "GINSENG CAPSULE 9x10's", price: 28.00},
+        {code: "DRC4810", name: "CAFE TONGKAT ALI (20x21g)", price: 11.00},
+        {code: "DRC4811", name: "GINALI CAPSULE 100's", price: 25.00},
+        {code: "DRC4815", name: "YEEGINKGO TABLET 90's", price: 23.00},
+        {code: "DRC4817", name: "MILK THISTLE TABLET 120's", price: 28.00},
+        {code: "DRC4821", name: "TONGKAT ALI CAPSULE 100's", price: 30.00},
+        {code: "DRC4824", name: "SEA CUCUMBER JELLY 500ml", price: 25.00},
+        {code: "DRC5802N", name: "NONI 500ml", price: 24.00},
+        {code: "DRC5803", name: "NONI PLUS TEA 30's", price: 16.00},
+        {code: "DRC5806", name: "DYNA 'S' TABLET 120's", price: 28.00},
+        {code: "DRC9918", name: "DYNA SERENOA TABLET 100's", price: 28.00}
+    ];
+
     function addShop() {
+        const container = document.getElementById('shopsContainer');
         const div = document.createElement('div');
-        div.innerHTML = `<input type="text" class="sName" placeholder="Shop Name">
-                         <input type="number" class="sTotal" placeholder="Amount ($)">`;
-        document.getElementById('shopContainer').appendChild(div);
+        div.className = 'shop-box';
+        div.innerHTML = `
+            <button style="position:absolute; top:5px; right:5px; background:red; color:white; width:auto; padding:5px; border-radius:4px; font-size:10px;" onclick="this.parentElement.remove()">X</button>
+            <input type="text" class="shopName" placeholder="SHOP NAME" style="font-weight:bold; width:80%;">
+            <div class="items-list"></div>
+            <button class="add-item" onclick="addItem(this)">+ ADD PRODUCT</button>
+        `;
+        container.appendChild(div);
+        addItem(div.querySelector('.add-item'));
     }
 
-    async function generateAndSave() {
-        const btn = document.getElementById('mainBtn');
-        btn.innerText = "⌛ UPLOADING PDF...";
-        btn.disabled = true;
+    function addItem(btn) {
+        const list = btn.parentElement.querySelector('.items-list');
+        const row = document.createElement('div');
+        row.className = 'item-row';
+        let options = products.map(p => `<option value="${p.price}|${p.code}|${p.name}">${p.code} - ${p.name}</option>`).join('');
+        row.innerHTML = `
+            <div><label>Product</label><select class="pData">${options}</select></div>
+            <div><label>Sold</label><input type="number" class="pSold" value="0"></div>
+            <div><label>Stock</label><input type="number" class="pStock" value="0"></div>
+            <button class="del-btn" onclick="this.parentElement.remove()">×</button>
+        `;
+        list.appendChild(row);
+    }
 
-        const date = document.getElementById('reportDate').value;
-        const shops = [];
-        let grandTotal = 0;
-
-        document.querySelectorAll('#shopContainer div').forEach(row => {
-            const n = row.querySelector('.sName').value || "Shop";
-            const a = parseFloat(row.querySelector('.sTotal').value) || 0;
-            shops.push({n, a}); grandTotal += a;
-        });
-
-        // Create PDF
+    function generatePDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.text("DYNAPHARM REPORT", 105, 20, {align:"center"});
-        doc.autoTable({ startY: 30, head:[['Shop','Total']], body: shops.map(s=>[s.n, `$${s.a.toFixed(2)}`]) });
-        
-        // Convert PDF to Base64 String for Firebase
-        const pdfBase64 = doc.output('datauristring');
+        const date = document.getElementById('reportDate').value;
+        let grandTotal = 0;
+        let yPos = 20;
 
-        // Save to Firebase
-        const success = await window.saveToCloud({
-            date: date,
-            total: grandTotal,
-            pdfData: pdfBase64,
-            timestamp: new Date().getTime()
+        doc.setFontSize(18);
+        doc.text("DYNAPHARM GLOBAL SALES REPORT", 105, yPos, { align: "center" });
+        yPos += 10;
+        doc.setFontSize(12);
+        doc.text(`Date: ${date}`, 105, yPos, { align: "center" });
+        yPos += 10;
+
+        document.querySelectorAll('.shop-box').forEach(box => {
+            const shopName = (box.querySelector('.shopName').value || "SHOP").toUpperCase();
+            let shopData = [];
+            let shopTotal = 0;
+
+            box.querySelectorAll('.item-row').forEach(row => {
+                const [price, code, name] = row.querySelector('.pData').value.split('|');
+                const sold = parseInt(row.querySelector('.pSold').value) || 0;
+                const stock = parseInt(row.querySelector('.pStock').value) || 0;
+                if (sold > 0) {
+                    const lineTotal = parseFloat(price) * sold;
+                    shopTotal += lineTotal;
+                    shopData.push([code, name, sold, stock, "$" + lineTotal.toFixed(2)]);
+                }
+            });
+
+            if (shopData.length > 0) {
+                doc.setFontSize(14);
+                doc.text(`Shop: ${shopName}`, 14, yPos);
+                doc.autoTable({
+                    startY: yPos + 2,
+                    head: [['Code', 'Product', 'Sold', 'Stock', 'Total']],
+                    body: shopData,
+                    foot: [['', '', '', 'Shop Total:', "$" + shopTotal.toFixed(2)]]
+                });
+                yPos = doc.lastAutoTable.finalY + 15;
+                grandTotal += shopTotal;
+            }
         });
 
-        if (success) {
-            doc.save(`Report_${date}.pdf`);
-            alert("Report saved to Cloud and Downloaded!");
-        }
-        btn.innerText = "SAVE TO CLOUD & DOWNLOAD";
-        btn.disabled = false;
+        doc.setFontSize(16);
+        doc.text(`GRAND TOTAL REVENUE: $${grandTotal.toFixed(2)}`, 14, yPos + 10);
+        doc.save(`Dynapharm_Report_${date}.pdf`);
     }
 
-    window.viewPDF = (data) => {
-        const win = window.open();
-        win.document.write('<iframe src="' + data + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>');
-    };
-
+    // Start with one shop
     addShop();
 </script>
 </body>
 </html>
+
