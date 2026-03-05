@@ -2,23 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Global Sales System - 36 Products</title>
+    <title>Global Sales System - Pro Edition</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         body { font-family: -apple-system, sans-serif; padding: 15px; background: #f4f7f9; padding-bottom: 100px; }
         .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 600px; margin: auto; }
-        h2 { text-align: center; color: #1a73e8; margin-top: 0; text-transform: uppercase; }
-        .shop-box { border: 2px solid #1a73e8; padding: 15px; border-radius: 8px; margin-bottom: 20px; background: #fff; }
-        .item-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        label { font-weight: bold; font-size: 11px; color: #555; display: block; }
+        h2 { text-align: center; color: #1a73e8; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
+        .shop-box { border: 2px solid #1a73e8; padding: 15px; border-radius: 8px; margin-bottom: 25px; background: #fff; position: relative; }
+        .item-row { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px; align-items: end; }
+        label { font-weight: bold; font-size: 11px; color: #555; display: block; margin-bottom: 4px; }
         input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .add-shop { background: #444; color: white; }
-        .add-item { background: #e8f0fe; color: #1a73e8; border: 1px dashed #1a73e8; }
-        .pdf-btn { background: #28a745; color: white; font-size: 18px; margin-top: 25px; }
-        .footer { text-align: center; margin-top: 40px; padding: 15px; background: #fff; border-radius: 10px; border: 1px solid #1a73e8; font-size: 13px; }
+        button { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .add-shop { background: #444; color: white; margin-top: 10px; }
+        .add-item { background: #e8f0fe; color: #1a73e8; border: 1px dashed #1a73e8; margin-top: 10px; }
+        .pdf-btn { background: #28a745; color: white; font-size: 18px; margin-top: 25px; box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
+        .del-btn { background: #ffeded; color: #d93025; width: 40px; padding: 10px; font-size: 18px; }
+        .shop-del { position: absolute; top: -12px; right: 10px; background: #d93025; color: white; width: auto; padding: 5px 15px; font-size: 12px; }
+        .footer { text-align: center; margin-top: 40px; padding: 15px; background: #fff; border-radius: 10px; border: 1px solid #1a73e8; font-size: 13px; line-height: 1.6; }
         .footer b { color: #1a73e8; }
     </style>
 </head>
@@ -26,26 +28,27 @@
 
 <div class="card">
     <h2>Global Sales System</h2>
+    
     <div style="text-align: center; margin-bottom: 20px;">
-        <label>Select Report Date:</label>
+        <label>Report Date</label>
         <input type="date" id="reportDate">
     </div>
 
     <div id="shopsContainer"></div>
 
     <button class="add-shop" onclick="addShop()">+ ADD NEW SHOP</button>
-    <button class="pdf-btn" onclick="generatePDF()">GENERATE PDF REPORT</button>
+    <button class="pdf-btn" onclick="generatePDF()">GENERATE FINAL PDF</button>
 
     <div class="footer">
         Developed by: <b>[YOUR NAME]</b><br>
-        WhatsApp: <b>[YOUR NUMBER]</b>
+        WhatsApp Support: <b>[YOUR NUMBER]</b>
     </div>
 </div>
 
 <script>
     document.getElementById('reportDate').valueAsDate = new Date();
 
-    // ADD ALL 36 PRODUCTS HERE
+    // YOUR MASTER PRODUCT LIST
     const products = [
         {code: "DRC1201", name: "GINKO POWDER & GINSENG", price: 13.00},
         {code: "DRC1202", name: "GREEN TEA GANODERMA", price: 14.00},
@@ -60,30 +63,7 @@
         {code: "DRC2812", name: "HERBA WARISAN MAHARANI", price: 36.00},
         {code: "DRC3804", name: "DYNA TONIC 780ml", price: 33.00},
         {code: "DRC4810", name: "TONGKAT ALI COFFEE (20x21g)", price: 11.00},
-        {code: "DRC4815", name: "YEEGINKGO TABLET 90s", price: 23.00},
-        // --- ADD THE REMAINING 22 PRODUCTS BELOW THIS LINE ---
-        {code: "CODE15", name: "PRODUCT NAME 15", price: 0.00},
-        {code: "CODE16", name: "PRODUCT NAME 16", price: 0.00},
-        {code: "CODE17", name: "PRODUCT NAME 17", price: 0.00},
-        {code: "CODE18", name: "PRODUCT NAME 18", price: 0.00},
-        {code: "CODE19", name: "PRODUCT NAME 19", price: 0.00},
-        {code: "CODE20", name: "PRODUCT NAME 20", price: 0.00},
-        {code: "CODE21", name: "PRODUCT NAME 21", price: 0.00},
-        {code: "CODE22", name: "PRODUCT NAME 22", price: 0.00},
-        {code: "CODE23", name: "PRODUCT NAME 23", price: 0.00},
-        {code: "CODE24", name: "PRODUCT NAME 24", price: 0.00},
-        {code: "CODE25", name: "PRODUCT NAME 25", price: 0.00},
-        {code: "CODE26", name: "PRODUCT NAME 26", price: 0.00},
-        {code: "CODE27", name: "PRODUCT NAME 27", price: 0.00},
-        {code: "CODE28", name: "PRODUCT NAME 28", price: 0.00},
-        {code: "CODE29", name: "PRODUCT NAME 29", price: 0.00},
-        {code: "CODE30", name: "PRODUCT NAME 30", price: 0.00},
-        {code: "CODE31", name: "PRODUCT NAME 31", price: 0.00},
-        {code: "CODE32", name: "PRODUCT NAME 32", price: 0.00},
-        {code: "CODE33", name: "PRODUCT NAME 33", price: 0.00},
-        {code: "CODE34", name: "PRODUCT NAME 34", price: 0.00},
-        {code: "CODE35", name: "PRODUCT NAME 35", price: 0.00},
-        {code: "CODE36", name: "PRODUCT NAME 36", price: 0.00}
+        {code: "DRC4815", name: "YEEGINKGO TABLET 90s", price: 23.00}
     ];
 
     function addShop() {
@@ -91,9 +71,10 @@
         const div = document.createElement('div');
         div.className = 'shop-box';
         div.innerHTML = `
-            <input type="text" class="shopName" placeholder="Shop Name" style="font-weight:bold; font-size:18px; margin-bottom:15px; border:none; border-bottom:2px solid #ddd; width: 100%;">
+            <button class="shop-del" onclick="this.parentElement.remove()">REMOVE SHOP</button>
+            <input type="text" class="shopName" placeholder="ENTER SHOP NAME" style="font-weight:bold; font-size:18px; margin-bottom:15px; border:none; border-bottom:2px solid #1a73e8; width: 80%;">
             <div class="items-list"></div>
-            <button class="add-item" onclick="addItem(this)">+ Add Product</button>
+            <button class="add-item" onclick="addItem(this)">+ ADD PRODUCT</button>
         `;
         container.appendChild(div);
         addItem(div.querySelector('.add-item'));
@@ -106,8 +87,9 @@
         let options = products.map(p => `<option value="${p.price}|${p.code}|${p.name}">${p.code} - ${p.name}</option>`).join('');
         row.innerHTML = `
             <div><label>Product</label><select class="pData">${options}</select></div>
-            <div><label>Sold</label><input type="number" class="pSold" value="0"></div>
-            <div><label>Stock</label><input type="number" class="pStock" value="0"></div>
+            <div><label>Sold</label><input type="number" class="pSold" value="0" onfocus="this.select()"></div>
+            <div><label>Stock</label><input type="number" class="pStock" value="0" onfocus="this.select()"></div>
+            <button class="del-btn" onclick="this.parentElement.remove()">×</button>
         `;
         list.appendChild(row);
     }
@@ -117,9 +99,11 @@
         const doc = new jsPDF();
         const date = document.getElementById('reportDate').value;
 
-        doc.setFontSize(18);
-        doc.text("GLOBAL SALES & INVENTORY REPORT", 105, 15, { align: "center" });
+        doc.setFontSize(20);
+        doc.setTextColor(26, 115, 232);
+        doc.text("SALES & INVENTORY REPORT", 105, 15, { align: "center" });
         doc.setFontSize(10);
+        doc.setTextColor(100);
         doc.text("Date: " + date, 14, 25);
 
         let grandTotal = 0;
@@ -127,7 +111,7 @@
         let details = [];
 
         document.querySelectorAll('.shop-box').forEach(box => {
-            const name = (box.querySelector('.shopName').value || "SHOP").toUpperCase();
+            const name = (box.querySelector('.shopName').value || "UNNAMED SHOP").toUpperCase();
             let shopTotal = 0;
             let rows = [];
             box.querySelectorAll('.item-row').forEach(row => {
@@ -143,10 +127,11 @@
             details.push({name, total: shopTotal, rows});
         });
 
+        // Summary Table
         doc.autoTable({
-            startY: 30,
-            head: [['Shop Name', 'Total Sales ($)']],
-            body: [...summaries, [{content: 'GRAND TOTAL', styles: {fontStyle: 'bold'}}, {content: "$" + grandTotal.toFixed(2), styles: {fontStyle: 'bold'}}]],
+            startY: 32,
+            head: [['SHOP NAME', 'SALES TOTAL']],
+            body: [...summaries, [{content: 'GRAND TOTAL', styles: {fontStyle: 'bold', fillColor: [240, 240, 240]}}, {content: "$" + grandTotal.toFixed(2), styles: {fontStyle: 'bold', fillColor: [240, 240, 240]}}]],
             headStyles: { fillColor: [44, 62, 80] },
             theme: 'grid'
         });
@@ -154,26 +139,28 @@
         let currentY = doc.lastAutoTable.finalY + 12;
 
         details.forEach(shop => {
-            if (currentY > 240) { doc.addPage(); currentY = 20; }
+            if (currentY > 230) { doc.addPage(); currentY = 20; }
             doc.setFontSize(12);
-            doc.setTextColor(26, 115, 232);
-            doc.text(`DETAILS: ${shop.name}`, 14, currentY);
+            doc.setTextColor(0);
+            doc.text(`SHOP: ${shop.name}`, 14, currentY);
             
             doc.autoTable({
                 startY: currentY + 4,
-                head: [['Code', 'Description', 'Price', 'Sold', 'Stock', 'Total']],
+                head: [['CODE', 'PRODUCT', 'PRICE', 'SOLD', 'STOCK', 'TOTAL']],
                 body: shop.rows,
                 headStyles: { fillColor: [26, 115, 232] },
-                styles: { fontSize: 8 }
+                styles: { fontSize: 8 },
+                margin: { left: 14 }
             });
             currentY = doc.lastAutoTable.finalY + 12;
         });
 
+        // Professional Footer in PDF
         doc.setFontSize(9);
         doc.setTextColor(150);
-        doc.text("Developed by: [YOUR NAME] | WhatsApp: [YOUR NUMBER]", 105, 290, { align: "center" });
+        doc.text("Developed by: [ARSHAD] | WhatsApp: [+243902702275]", 105, 290, { align: "center" });
 
-        doc.save(`Global_Report_${date}.pdf`);
+        doc.save(`Global_Sales_Report_${date}.pdf`);
     }
 
     addShop();
