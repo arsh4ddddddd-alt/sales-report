@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Global Sales System - Pro Edition</title>
+    <title>Global Sales System - High Speed</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -26,6 +26,7 @@
         
         button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 8px; }
         .add-shop { background: #333; color: white; }
+        .load-all { background: #e67e22; color: white; margin-bottom: 10px; }
         .add-item { background: #e8f0fe; color: #1a73e8; border: 1px dashed #1a73e8; }
         .pdf-btn { background: #28a745; color: white; font-size: 18px; margin-top: 20px; }
         .del-btn { background: #ffeded; color: #d93025; width: 35px; padding: 5px; font-size: 16px; border: 1px solid #f5c6cb; }
@@ -110,15 +111,23 @@
             <button class="shop-del" onclick="this.parentElement.remove(); saveAll();">REMOVE SHOP</button>
             <input type="text" class="shopName" placeholder="SHOP NAME" style="font-weight:bold; width:80%;" oninput="saveAll()">
             <div class="items-list"></div>
-            <button class="add-item" onclick="addItem(this)">+ ADD PRODUCT</button>
+            <button class="load-all" onclick="loadAllProducts(this)">⚡ LOAD ALL PRODUCTS</button>
+            <button class="add-item" onclick="addItem(this)">+ ADD ONE PRODUCT</button>
         `;
         container.appendChild(div);
         if (data) {
             div.querySelector('.shopName').value = data.name;
             data.items.forEach(item => addItem(div.querySelector('.add-item'), item));
-        } else {
-            addItem(div.querySelector('.add-item'));
         }
+    }
+
+    function loadAllProducts(btn) {
+        const list = btn.parentElement.querySelector('.items-list');
+        list.innerHTML = ""; // Clear existing
+        products.forEach(p => {
+            addItem(btn, { val: `${p.price}|${p.code}|${p.name}`, sold: 0, stock: 0 });
+        });
+        saveAll();
     }
 
     function addItem(btn, data = null) {
@@ -163,7 +172,10 @@
                     nextRow.querySelector('.pSold').focus();
                 } else {
                     const nextShop = row.closest('.shop-box').nextElementSibling;
-                    if (nextShop) nextShop.querySelector('.pSold').focus();
+                    if (nextShop) {
+                        const firstInput = nextShop.querySelector('.pSold');
+                        if (firstInput) firstInput.focus();
+                    }
                 }
             }
         }
@@ -214,13 +226,9 @@
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const date = document.getElementById('reportDate').value;
-
-        doc.setFontSize(16);
-        doc.setTextColor(230, 126, 34);
+        doc.setFontSize(16); doc.setTextColor(230, 126, 34);
         doc.text("RAPPORT GLOBAL DES VENTES & INVENTAIRE", 105, 15, { align: "center" });
-
-        doc.setFontSize(10);
-        doc.setTextColor(0);
+        doc.setFontSize(10); doc.setTextColor(0);
         doc.text("Date ciblée: " + date, 14, 25);
         doc.setFont("helvetica", "italic");
         doc.text("Ce document récapitule les ventes de toutes les boutiques pour la journée indiquée.", 14, 30);
@@ -236,10 +244,9 @@
             box.querySelectorAll('.item-row').forEach(row => {
                 const [price, code, pName] = row.querySelector('.pData').value.split('|');
                 const sold = parseInt(row.querySelector('.pSold').value) || 0;
-                const stock = row.querySelector('.pStock').value || 0;
                 const totalLine = parseFloat(price) * sold;
                 shopTotal += totalLine;
-                rows.push([code, pName, "$" + parseFloat(price).toFixed(2), sold, stock, {content: "$" + totalLine.toFixed(2), styles: {fontStyle: 'bold'}}]);
+                rows.push([code, pName, "$" + parseFloat(price).toFixed(2), sold, row.querySelector('.pStock').value, {content: "$" + totalLine.toFixed(2), styles: {fontStyle: 'bold'}}]);
             });
             grandTotal += shopTotal;
             summaries.push([name, {content: "$" + shopTotal.toFixed(2), styles: {fontStyle: 'bold'}}]);
@@ -247,8 +254,7 @@
         });
 
         doc.autoTable({
-            startY: 40,
-            head: [['Boutique', 'Total des Ventes ($)']],
+            startY: 40, head: [['Boutique', 'Total des Ventes ($)']],
             body: [...summaries, [{content: 'TOTAL GÉNÉRAL DU JOUR', styles: {fontStyle: 'bold'}}, {content: "$" + grandTotal.toFixed(2), styles: {fontStyle: 'bold'}}]],
             headStyles: { fillColor: [230, 126, 34] }
         });
@@ -268,7 +274,6 @@
             });
             currentY = doc.lastAutoTable.finalY + 15;
         });
-
         doc.save(`Global_Report_${date}.pdf`);
     }
 </script>
