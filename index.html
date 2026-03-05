@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DYNAPHARM SALES SYSTEM - MASTER EDITION</title>
+    <title>DYNAPHARM MASTER SYSTEM</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -22,194 +22,110 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        window.saveToCloud = async (data) => {
+
+        // This replaces the broken window.db.collection function
+        window.saveReport = async (data) => {
             try {
-                await addDoc(collection(db, "global_reports"), data);
-                console.log("Cloud Sync Complete");
-            } catch (e) { console.error("Cloud Error", e); }
+                const docRef = await addDoc(collection(db, "sales_reports"), data);
+                console.log("Success! ID:", docRef.id);
+                return true;
+            } catch (error) {
+                alert("Cloud Error: " + error.message);
+                return false;
+            }
         };
     </script>
 
     <style>
-        body { font-family: -apple-system, sans-serif; padding: 10px; background: #f0f2f5; padding-bottom: 80px; }
-        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 600px; margin: auto; }
-        h2 { text-align: center; color: #1a73e8; margin-top: 5px; text-transform: uppercase; font-size: 20px; }
-        .shop-box { border: 2px solid #1a73e8; padding: 12px; border-radius: 8px; margin-bottom: 20px; background: #fff; position: relative; }
-        .item-row { display: grid; grid-template-columns: 2.5fr 1fr 1fr auto; gap: 5px; margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 8px; align-items: end; }
-        label { font-weight: bold; font-size: 10px; color: #666; display: block; margin-bottom: 2px; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 8px; }
-        .add-shop { background: #333; color: white; }
-        .add-item { background: #e8f0fe; color: #1a73e8; border: 1px dashed #1a73e8; }
-        .pdf-btn { background: #28a745; color: white; font-size: 18px; margin-top: 20px; }
-        .del-btn { background: #ffeded; color: #d93025; width: 35px; padding: 5px; font-size: 16px; border: 1px solid #f5c6cb; }
-        .shop-del { position: absolute; top: -10px; right: 10px; background: #d93025; color: white; width: auto; padding: 4px 10px; font-size: 11px; }
-        .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #888; border-top: 1px solid #ddd; padding-top: 10px; }
+        body { font-family: sans-serif; padding: 15px; background: #f4f7f6; }
+        .card { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #1a73e8; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-add { background: #333; color: white; margin-bottom: 10px; }
+        .btn-main { background: #28a745; color: white; font-size: 16px; }
+        .shop-entry { border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; position: relative; }
+        .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #888; border-top: 1px solid #eee; padding-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>DYNAPHARM Sales System</h2>
-    <div style="text-align: center; margin-bottom: 15px;">
-        <label>Report Date</label>
-        <input type="date" id="reportDate">
-    </div>
+    <h2>DYNAPHARM SYSTEM</h2>
+    
+    <label>Date</label>
+    <input type="date" id="dateSelect">
 
-    <div id="shopsContainer"></div>
-
-    <button class="add-shop" onclick="addShop()">+ ADD NEW SHOP</button>
-    <button class="pdf-btn" onclick="generatePDF()">DOWNLOAD PDF & SAVE CLOUD</button>
+    <div id="shopContainer"></div>
+    <button class="btn btn-add" onclick="addNewShop()">+ ADD SHOP</button>
+    <button id="submitBtn" class="btn btn-main" onclick="handleSubmission()">DOWNLOAD PDF & SAVE CLOUD</button>
 
     <div class="footer">
-        Developed by: <b>ARSHAD</b> | WhatsApp: <b>+243 902 702 275</b>
+        Developed by: <b>ARSHAD</b><br>
+        WhatsApp: <b>+243 902 702 275</b>
     </div>
 </div>
 
 <script>
-    document.getElementById('reportDate').valueAsDate = new Date();
+    document.getElementById('dateSelect').valueAsDate = new Date();
 
-    const products = [
-        {code: "DRC1201", name: "CAFE GINKO EN POUDRE", price: 13.00},
-        {code: "DRC1202", name: "CAFE THE VERT GANODERMA", price: 14.00},
-        {code: "DRC1203", name: "CAFE KACIP FATIMA", price: 14.00},
-        {code: "DRC1204", name: "CAFE TONGKAT ET MACCA", price: 14.00},
-        {code: "DRC1205", name: "CAFE CAPPUCCINO GANODERMA", price: 15.00},
-        {code: "DRC1802A", name: "D.I. LIQUID ALFALFA 500ML", price: 20.00},
-        {code: "DRC1804", name: "GANODERMA CAFE (20x21g)", price: 11.00},
-        {code: "DRC1810", name: "CAPSULE DE YEE GANO 90's", price: 23.00},
-        {code: "DRC1811", name: "YEEGARLIC CAPSULE 90's", price: 23.00},
-        {code: "DRC1814", name: "GANODERMA CHOCOLAT", price: 19.00},
-        {code: "DRC1817", name: "CAFE CHOIX DU PRESIDENT", price: 15.00},
-        {code: "DRC1818", name: "CAFE NOIR GANODERMA", price: 12.00},
-        {code: "DRC2802", name: "COMPRIMES LAIT DE CHEVRE", price: 18.00},
-        {code: "DRC2804", name: "POUDRE GRAINES DE SOJA", price: 14.00},
-        {code: "DRC2805", name: "MARINE SOLUBLE SPIRULINA", price: 25.00},
-        {code: "DRC2807", name: "COMPRIME SPIRULINA (300)", price: 30.00},
-        {code: "DRC2812", name: "HERBA WARISAN MAHARANI", price: 36.00},
-        {code: "DRC2813", name: "SOJA GINGEMBRE", price: 14.00},
-        {code: "DRC2814", name: "LAIT DE CHEVRE 1 ET POUDRE", price: 18.00},
-        {code: "DRC3804", name: "DYNA TONIC 780ml", price: 33.00},
-        {code: "DRC3809", name: "YEE YANG YEN TABLET 90's", price: 25.00},
-        {code: "DRC3810", name: "RED COFFEE GINSENG", price: 12.00},
-        {code: "DRC3812", name: "GREEN TEA EXTRACT CAPSULE", price: 22.00},
-        {code: "DRC3814", name: "PROLINK 20's x 20g", price: 20.00},
-        {code: "DRC4803", name: "GINSENG MIEL GINGEMBRE", price: 15.00},
-        {code: "DRC4805", name: "GINSENG CAPSULE 9x10's", price: 28.00},
-        {code: "DRC4810", name: "CAFE TONGKAT ALI (20x21g)", price: 11.00},
-        {code: "DRC4811", name: "GINALI CAPSULE 100's", price: 25.00},
-        {code: "DRC4815", name: "YEEGINKGO TABLET 90's", price: 23.00},
-        {code: "DRC4817", name: "MILK THISTLE TABLET 120's", price: 28.00},
-        {code: "DRC4821", name: "TONGKAT ALI CAPSULE 100's", price: 30.00},
-        {code: "DRC4824", name: "SEA CUCUMBER JELLY 500ml", price: 25.00},
-        {code: "DRC5802N", name: "NONI 500ml", price: 24.00},
-        {code: "DRC5803", name: "NONI PLUS TEA 30's", price: 16.00},
-        {code: "DRC5806", name: "DYNA 'S' TABLET 120's", price: 28.00},
-        {code: "DRC9918", name: "DYNA SERENOA TABLET 100's", price: 28.00}
-    ];
-
-    function addShop() {
-        const container = document.getElementById('shopsContainer');
+    function addNewShop() {
+        const container = document.getElementById('shopContainer');
         const div = document.createElement('div');
-        div.className = 'shop-box';
+        div.className = 'shop-entry';
         div.innerHTML = `
-            <button class="shop-del" onclick="this.parentElement.remove()">REMOVE SHOP</button>
-            <input type="text" class="shopName" placeholder="SHOP NAME (e.g. BOTOUR)" style="font-weight:bold; width:80%;">
-            <div class="items-list"></div>
-            <button class="add-item" onclick="addItem(this)">+ ADD PRODUCT</button>
+            <input type="text" class="sName" placeholder="Shop Name">
+            <input type="number" class="sTotal" placeholder="Total Sales Amount ($)">
         `;
         container.appendChild(div);
-        addItem(div.querySelector('.add-item'));
     }
 
-    function addItem(btn) {
-        const list = btn.parentElement.querySelector('.items-list');
-        const row = document.createElement('div');
-        row.className = 'item-row';
-        let options = products.map(p => `<option value="${p.price}|${p.code}|${p.name}">${p.code} - ${p.name}</option>`).join('');
-        row.innerHTML = `
-            <div><label>Select Product</label><select class="pData">${options}</select></div>
-            <div><label>Sold</label><input type="number" class="pSold" value="0" onfocus="this.select()"></div>
-            <div><label>Stock</label><input type="number" class="pStock" value="0" onfocus="this.select()"></div>
-            <button class="del-btn" onclick="this.parentElement.remove()">×</button>
-        `;
-        list.appendChild(row);
-    }
+    async function handleSubmission() {
+        const btn = document.getElementById('submitBtn');
+        btn.innerText = "⌛ PROCESSING...";
+        btn.disabled = true;
 
-    async function generatePDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        const date = document.getElementById('reportDate').value;
-
-        doc.setFontSize(18);
-        doc.setTextColor(26, 115, 232);
-        doc.text("GLOBAL SALES & INVENTORY REPORT", 105, 15, { align: "center" });
-        doc.setFontSize(10);
-        doc.setTextColor(100);
-        doc.text("Date: " + date, 14, 25);
-
+        const date = document.getElementById('dateSelect').value;
+        const shops = [];
         let grandTotal = 0;
-        let summaries = [];
-        let details = [];
-        let cloudData = { date: date, shops: [], totalSales: 0, timestamp: new Date() };
 
-        document.querySelectorAll('.shop-box').forEach(box => {
-            const name = (box.querySelector('.shopName').value || "SHOP").toUpperCase();
-            let shopTotal = 0;
-            let rows = [];
-            let itemsForCloud = [];
-            
-            box.querySelectorAll('.item-row').forEach(row => {
-                const [price, code, pName] = row.querySelector('.pData').value.split('|');
-                const sold = parseInt(row.querySelector('.pSold').value) || 0;
-                const stock = row.querySelector('.pStock').value || 0;
-                const total = parseFloat(price) * sold;
-                shopTotal += total;
-                rows.push([code, pName, "$" + parseFloat(price).toFixed(2), sold, stock, "$" + total.toFixed(2)]);
-                itemsForCloud.push({code, pName, sold, stock, total});
-            });
-            
-            grandTotal += shopTotal;
-            summaries.push([name, "$" + shopTotal.toFixed(2)]);
-            details.push({name, total: shopTotal, rows});
-            cloudData.shops.push({shopName: name, total: shopTotal, items: itemsForCloud});
-        });
-        
-        cloudData.totalSales = grandTotal;
-
-        doc.autoTable({
-            startY: 30,
-            head: [['Shop Name', 'Total Sales ($)']],
-            body: [...summaries, [{content: 'GRAND TOTAL', styles: {fontStyle: 'bold', fillColor: [240, 240, 240]}}, {content: "$" + grandTotal.toFixed(2), styles: {fontStyle: 'bold', fillColor: [240, 240, 240]}}]],
-            headStyles: { fillColor: [44, 62, 80] }
+        document.querySelectorAll('.shop-entry').forEach(row => {
+            const name = row.querySelector('.sName').value || "Shop";
+            const amt = parseFloat(row.querySelector('.sTotal').value) || 0;
+            shops.push({ name, amt });
+            grandTotal += amt;
         });
 
-        let currentY = doc.lastAutoTable.finalY + 10;
-        details.forEach(shop => {
-            if (currentY > 240) { doc.addPage(); currentY = 20; }
-            doc.setFontSize(11);
-            doc.setTextColor(0);
-            doc.text(`DETAILS: ${shop.name}`, 14, currentY);
+        // 1. Save to Cloud
+        const cloudOk = await window.saveReport({
+            date: date,
+            shops: shops,
+            total: grandTotal,
+            timestamp: new Date().toISOString()
+        });
+
+        if (cloudOk) {
+            // 2. Make PDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text("DYNAPHARM SALES REPORT", 105, 20, { align: "center" });
+            doc.text(`Date: ${date}`, 20, 30);
+            
             doc.autoTable({
-                startY: currentY + 4,
-                head: [['Code', 'Description', 'Price', 'Sold', 'Stock', 'Total']],
-                body: shop.rows,
-                headStyles: { fillColor: [26, 115, 232] },
-                styles: { fontSize: 8 }
+                startY: 40,
+                head: [['Shop', 'Amount']],
+                body: [...shops.map(s => [s.name, `$${s.amt.toFixed(2)}`]), ['GRAND TOTAL', `$${grandTotal.toFixed(2)}`]]
             });
-            currentY = doc.lastAutoTable.finalY + 10;
-        });
 
-        doc.setFontSize(9);
-        doc.setTextColor(150);
-        doc.text("Generated by Sales System | Developed by ARSHAD (+243 902 702 275)", 105, 285, { align: "center" });
-        
-        // SAVE TO CLOUD & DOWNLOAD PDF
-        await window.saveToCloud(cloudData);
-        doc.save(`Global_Report_${date}.pdf`);
-        alert("Report Saved to Cloud & PDF Downloaded!");
+            doc.save(`Report_${date}.pdf`);
+            alert("Success! Saved to Cloud & PDF Downloaded.");
+        }
+
+        btn.innerText = "DOWNLOAD PDF & SAVE CLOUD";
+        btn.disabled = false;
     }
-    addShop();
+
+    addNewShop();
 </script>
 </body>
 </html>
