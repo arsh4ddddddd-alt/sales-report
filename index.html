@@ -2,27 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Global Sales - Secure Portal</title>
+    <title>Global Sales - ARSHAD PRO</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root { --blue: #1a73e8; --green: #28a745; --dark: #202124; }
-        body { font-family: -apple-system, sans-serif; background: #f8f9fa; margin: 0; padding: 10px; }
+        body { font-family: -apple-system, sans-serif; background: #f8f9fa; margin: 0; padding: 10px; color: var(--dark); }
         .hidden { display: none !important; }
         
         #authScreen { position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:10000; display:flex; align-items:center; justify-content:center; }
         .auth-card { width: 90%; max-width: 400px; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
-        input { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; font-size: 16px; box-sizing: border-box; }
+        input, select { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; font-size: 16px; box-sizing: border-box; }
         .btn-auth { background: var(--blue); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; }
 
-        .card { background: white; border-radius: 15px; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 15px; }
-        .shop-box { border: 1px solid #ddd; border-left: 5px solid var(--blue); padding: 15px; border-radius: 10px; margin-bottom: 15px; position: relative; }
-        .row { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; margin-bottom: 10px; align-items: end; }
-        .total-banner { background: var(--dark); color: white; padding: 15px; border-radius: 12px; text-align: right; font-weight: bold; font-size: 18px; margin-bottom: 15px; }
-        .btn-green { background: var(--green); color: white; border: none; padding: 18px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 18px; cursor: pointer; }
+        .card { background: white; border-radius: 15px; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        .shop-box { border: 1px solid #eee; border-left: 5px solid var(--blue); padding: 15px; border-radius: 12px; margin-bottom: 15px; position: relative; background: white; }
+        .row { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; margin-bottom: 12px; align-items: end; }
+        .total-banner { background: var(--dark); color: white; padding: 20px; border-radius: 15px; text-align: right; font-weight: bold; font-size: 20px; margin-bottom: 20px; }
+        .btn-green { background: var(--green); color: white; border: none; padding: 20px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 18px; cursor: pointer; box-shadow: 0 4px 15px rgba(40,167,69,0.3); }
         
-        .dev-footer { text-align: center; margin-top: 30px; padding: 20px; border-top: 1px solid #eee; color: #777; font-size: 13px; line-height: 1.6; }
+        .dev-footer { text-align: center; margin-top: 40px; padding: 20px; color: #888; font-size: 12px; border-top: 1px solid #eee; }
         .dev-footer b { color: var(--blue); }
     </style>
 </head>
@@ -30,50 +30,45 @@
 
 <div id="authScreen">
     <div class="auth-card" id="loginForm">
-        <h2 style="color:var(--blue)">Global Sales Access</h2>
-        <input type="password" id="loginPin" placeholder="Enter PIN">
+        <h2 style="color:var(--blue); margin-bottom:5px;">Global Sales</h2>
+        <p style="color:#666; font-size:14px;">Secure Access for ARSHAD</p>
+        <input type="password" id="loginPin" placeholder="Enter PIN" inputmode="numeric">
         <button class="btn-auth" onclick="checkLogin()">LOGIN</button>
-        <p style="font-size: 12px; margin-top: 20px;">No account? <a href="#" onclick="toggleAuth()">Create Account</a></p>
+        <p style="font-size: 12px; margin-top: 20px;">No access? <a href="#" onclick="toggleAuth()">Create Account</a></p>
     </div>
     <div class="auth-card hidden" id="regForm">
-        <h2 style="color:var(--blue)">Create Account</h2>
+        <h2 style="color:var(--blue)">Request Access</h2>
         <input type="text" id="regName" placeholder="Full Name">
-        <input type="password" id="regPin" placeholder="Desired PIN">
-        <button class="btn-auth" style="background:var(--dark)" onclick="requestAccess()">REQUEST ACCESS</button>
-        <p style="font-size: 12px; margin-top: 20px;"><a href="#" onclick="toggleAuth()">Back</a></p>
+        <input type="password" id="regPin" placeholder="Choose a PIN" inputmode="numeric">
+        <button class="btn-auth" style="background:var(--dark)" onclick="requestAccess()">SEND TO ARSHAD</button>
+        <p style="font-size: 12px; margin-top: 20px;"><a href="#" onclick="toggleAuth()">Back to Login</a></p>
     </div>
 </div>
 
 <div id="mainApp" class="hidden">
     <div class="card" style="text-align:center">
-        <h2 style="color:var(--blue); margin:0;">GLOBAL SALES SYSTEM</h2>
-        <input type="date" id="reportDate" style="border:none; font-weight:bold; color:#666; margin-top:10px;">
+        <h2 style="color:var(--blue); margin:0; font-size: 18px;">SALES DASHBOARD</h2>
+        <input type="date" id="reportDate" style="border:none; text-align:center; font-weight:bold; color:var(--blue);">
     </div>
 
     <div id="shopsContainer"></div>
-    <div class="total-banner">EST. TOTAL: $<span id="grandTotal">0.00</span></div>
+    <div class="total-banner">TOTAL: $<span id="grandTotal">0.00</span></div>
     
-    <button class="btn-auth" onclick="addShop()" style="width:100%">+ ADD NEW SHOP</button>
-    <button class="btn-green" style="margin-top:15px;" onclick="downloadPDF()">DOWNLOAD PDF REPORT</button>
+    <button class="btn-auth" onclick="addShop()" style="width:100%; margin-bottom:10px;">+ ADD SHOP</button>
+    <button class="btn-green" onclick="downloadPDF()">DOWNLOAD PDF REPORT</button>
 
     <div class="dev-footer">
-        System Developed & Managed by:<br>
-        <b id="displayDevName">Loading...</b><br>
-        WhatsApp: <b id="displayDevPhone">Loading...</b>
+        Developed by: <b>ARSHAD</b><br>
+        WhatsApp: <b>+243 902 702 275</b>
     </div>
 </div>
 
 <script>
-    // --- 1. ENTER YOUR DETAILS HERE ---
-    const DEV_NAME = "ARSHAD";       // Edit this
-    const DEV_PHONE = "+243 902 702 275"; // Edit this
-    const MASTER_PIN = "1234";          // Edit this
+    const MY_NAME = "ARSHAD";
+    const MY_PHONE = "243902702275"; 
+    const MY_PIN = "1234";
 
-    // Update display automatically
-    document.getElementById('displayDevName').innerText = DEV_NAME;
-    document.getElementById('displayDevPhone').innerText = DEV_PHONE;
-
-    if(localStorage.getItem('isLoggedIn') === 'true') {
+    if(localStorage.getItem('userAuthed') === 'true') {
         document.getElementById('authScreen').classList.add('hidden');
         document.getElementById('mainApp').classList.remove('hidden');
     }
@@ -83,57 +78,57 @@
         document.getElementById('regForm').classList.toggle('hidden');
     }
 
-    function requestAccess() {
-        const name = document.getElementById('regName').value;
-        const pin = document.getElementById('regPin').value;
-        const msg = `*NEW ACCOUNT REQUEST*%0AName: ${name}%0APIN: ${pin}`;
-        window.open(`https://wa.me/${DEV_PHONE.replace(/\s+/g, '')}?text=${msg}`);
+    function checkLogin() {
+        if(document.getElementById('loginPin').value === MY_PIN) {
+            localStorage.setItem('userAuthed', 'true');
+            location.reload();
+        } else { alert("Incorrect PIN"); }
     }
 
-    function checkLogin() {
-        if(document.getElementById('loginPin').value === MASTER_PIN) {
-            localStorage.setItem('isLoggedIn', 'true');
-            location.reload();
-        } else { alert("Wrong PIN"); }
+    function requestAccess() {
+        const n = document.getElementById('regName').value;
+        const p = document.getElementById('regPin').value;
+        if(!n || !p) return alert("Fill all fields");
+        window.open(`https://wa.me/${MY_PHONE}?text=Hello Arshad, I want access%0AName: ${n}%0APIN: ${p}`);
     }
 
     const products = [
-        {code: "DRC1201", name: "CAFE GINKO EN POUDRE ET GINSENG", price: 13.00},
-        {code: "DRC1202", name: "CAFÉ DE THE VERT GANODERMA", price: 14.00},
-        {code: "DRC1203", name: "CAFÉ KACIP FATIMA GANODERMA", price: 14.00},
-        {code: "DRC1204", name: "CAFE TONGKAT ET MACCA", price: 14.00},
-        {code: "DRC1205", name: "CAFÉ CUPPUCCINO GANODERMA", price: 15.00},
-        {code: "DRC1802A", name: "D.I. LIQUID ALFALFA 500ML", price: 20.00},
+        {code: "DRC1201", name: "CAFE GINKO EN POUDRE ET GINSENG EN POUDR", price: 13.00},
+        {code: "DRC1202", name: "CAFÉ DE THE VERT AVEC POUDRE GANODERMA", price: 14.00},
+        {code: "DRC1203", name: "CAFÉ KACIP FATIMA AVEC POUDRE GANODERMA", price: 14.00},
+        {code: "DRC1204", name: "CAFE AVEC LA POUDRE DE TONGKAT ET MACCA", price: 14.00},
+        {code: "DRC1205", name: "CAFÉ CUPPUCCINO AVEC LA POUDRE GANODERMA", price: 15.00},
+        {code: "DRC1802A", name: "D.I. LIQUID ALFALFA PLUS GUARANA 500ML", price: 20.00},
         {code: "DRC1804", name: "GANODERMA CAFE (20x21g)", price: 11.00},
-        {code: "DRC1810", name: "CAPSULE DE YEE GANO 90s", price: 23.00},
-        {code: "DRC1811", name: "YEEGARLIC CAPSULE 90s", price: 23.00},
-        {code: "DRC1814", name: "GANODERMA CHOCOLAT", price: 19.00},
-        {code: "DRC1817", name: "CAFÉ CHOIX DU PRESIDENT", price: 15.00},
-        {code: "DRC1818", name: "CAFÉ NOIR GANODERMA", price: 12.00},
-        {code: "DRC2802", name: "COMPRIMES LAIT DE CHEVRE", price: 18.00},
-        {code: "DRC2804", name: "POUDRE GRAINES DE SOJA", price: 14.00},
+        {code: "DRC1810", name: "CAPSULE DE YEE GANO 90's", price: 23.00},
+        {code: "DRC1811", name: "YEEGARLIC CAPSULE 90's", price: 23.00},
+        {code: "DRC1814", name: "GANODERMA CHOCOLAT (30'sX 30's)", price: 19.00},
+        {code: "DRC1817", name: "CAFÉ CHOIX DU PRESIDENT 4 EN 1", price: 15.00},
+        {code: "DRC1818", name: "CAFÉ NOIR GANODERMA ET TONGKATI ALI", price: 12.00},
+        {code: "DRC2802", name: "COMPRIMES LAIT DE CHEVRE 150's", price: 18.00},
+        {code: "DRC2804", name: "POUDRE INSTANTANEE DES GAINES DE SOJA", price: 14.00},
         {code: "DRC2805", name: "MARINE SOLUBLE SPIRULLINA", price: 25.00},
-        {code: "DRC2807", name: "COMPRIME SPIRULINA (300s)", price: 30.00},
+        {code: "DRC2807", name: "COMPRIME DE SPIRULINA (300's)", price: 30.00},
         {code: "DRC2812", name: "HERBA WARISAN MAHARANI", price: 36.00},
-        {code: "DRC2813", name: "MELANGE SOJA GINGEMBRE", price: 14.00},
-        {code: "DRC2814", name: "LAIT DE CHEVRE EN 1 ET POUDRE", price: 18.00},
+        {code: "DRC2813", name: "MELANGE INSTANTANE DE SOJA GINGEMBRE", price: 14.00},
+        {code: "DRC2814", name: "LAIT DE CHEVRE EN 1 ET POUDRE (PREMIX)", price: 18.00},
         {code: "DRC3804", name: "DYNA TONIC 780ml", price: 33.00},
-        {code: "DRC3809", name: "YEE YANG YEN TABLET 90s", price: 25.00},
-        {code: "DRC3810", name: "RED COFFEE WITH GINSENG", price: 12.00},
-        {code: "DRC3812", name: "GREEN TEA EXTRACT CAPSULE", price: 22.00},
-        {code: "DRC3814", name: "PROLINK 20s x 20g", price: 20.00},
+        {code: "DRC3809", name: "YEE YANG YEN TABLET 90's", price: 25.00},
+        {code: "DRC3810", name: "RED COFFEE WITH GINSENG 12's x 25g", price: 12.00},
+        {code: "DRC3812", name: "GREEN TEA EXTRACT CAPSULE 60's", price: 22.00},
+        {code: "DRC3814", name: "PROLINK 20's x 20g", price: 20.00},
         {code: "DRC4803", name: "GINSENG MIEL ET GINGEMBRE", price: 15.00},
-        {code: "DRC4805", name: "GINSENG CAPSULE 9 x 10s", price: 28.00},
+        {code: "DRC4805", name: "GINSENG CAPSULE 9 x 10's", price: 28.00},
         {code: "DRC4810", name: "CAFÉ TONGKAT ALI (20x21g)", price: 11.00},
-        {code: "DRC4811", name: "GINALI CAPSULE 100s", price: 25.00},
-        {code: "DRC4815", name: "YEEGINKGO TABLET 90s", price: 23.00},
-        {code: "DRC4817", name: "MILK THISTLE TABLET 120s", price: 28.00},
-        {code: "DRC4821", name: "TONGKAT ALI CAPSULE 100s", price: 30.00},
+        {code: "DRC4811", name: "GINALI CAPSULE 100's", price: 25.00},
+        {code: "DRC4815", name: "YEEGINKGO TABLET 90's", price: 23.00},
+        {code: "DRC4817", name: "MILK THISTLE TABLET 120's", price: 28.00},
+        {code: "DRC4821", name: "TONGKAT ALI CAPSULE 100's", price: 30.00},
         {code: "DRC4824", name: "SEA CUCUMBER JELLY 500ml", price: 25.00},
         {code: "DRC5802N", name: "NONI 500ml", price: 24.00},
-        {code: "DRC5803", name: "NONI PLUS TEA 30s x 3g", price: 16.00},
-        {code: "DRC5806", name: "DYNA S TABLET 120s", price: 28.00},
-        {code: "DRC9918", name: "DYNA SERENOA TABLET 100s", price: 28.00}
+        {code: "DRC5803", name: "NONI PLUS TEA 30's x 3g", price: 16.00},
+        {code: "DRC5806", name: "DYNA 'S' TABLET 120's", price: 28.00},
+        {code: "DRC9918", name: "DYNA SERENOA TABLET 100's", price: 28.00}
     ].sort((a,b) => a.name.localeCompare(b.name));
 
     document.getElementById('reportDate').valueAsDate = new Date();
@@ -141,12 +136,7 @@
     function addShop() {
         const div = document.createElement('div');
         div.className = 'shop-box';
-        div.innerHTML = `
-            <input type="text" class="sName" placeholder="SHOP NAME">
-            <div class="itemList"></div>
-            <button onclick="addItem(this)" style="width:100%; border:none; padding:10px; border-radius:8px;">+ Add Product</button>
-            <button onclick="this.parentElement.remove(); calcTotal();" style="position:absolute; top:10px; right:10px; border:none; color:red; background:none;">×</button>
-        `;
+        div.innerHTML = `<input type="text" class="sName" placeholder="SHOP NAME" style="font-weight:bold; border:none; border-bottom:1px solid #ddd; margin-bottom:10px;"><div class="itemList"></div><button onclick="addItem(this)" style="width:100%; border:none; padding:10px; background:#f0f0f0; border-radius:8px;">+ Add Item</button><button onclick="this.parentElement.remove(); calcTotal();" style="position:absolute; top:10px; right:10px; border:none; color:red; background:none; font-size:18px;">×</button>`;
         document.getElementById('shopsContainer').appendChild(div);
         addItem(div.querySelector('button'));
     }
@@ -156,12 +146,7 @@
         const row = document.createElement('div');
         row.className = 'row';
         let opts = products.map(p => `<option value="${p.price}|${p.code}|${p.name}">${p.name}</option>`).join('');
-        row.innerHTML = `
-            <div><label style="font-size:10px">Item</label><select class="pData" onchange="calcTotal()">${opts}</select></div>
-            <div><label style="font-size:10px">Sold</label><input type="number" class="pSold" value="0" oninput="calcTotal()"></div>
-            <div><label style="font-size:10px">Stock</label><input type="number" class="pStock" value="0"></div>
-            <button onclick="this.parentElement.remove(); calcTotal();" style="background:#fee; color:red; border:none; height:45px; width:40px; border-radius:10px;">×</button>
-        `;
+        row.innerHTML = `<div><label style="font-size:10px">Item</label><select class="pData" onchange="calcTotal()">${opts}</select></div><div><label style="font-size:10px">Sold</label><input type="number" class="pSold" value="0" oninput="calcTotal()" onfocus="this.select()"></div><div><label style="font-size:10px">Stock</label><input type="number" class="pStock" value="0"></div><button onclick="this.parentElement.remove(); calcTotal();" style="background:#fee; color:red; border:none; height:48px; width:40px; border-radius:10px;">×</button>`;
         list.appendChild(row);
         calcTotal();
     }
@@ -190,29 +175,29 @@
 
         let y = 40;
         document.querySelectorAll('.shop-box').forEach(shop => {
-            const name = (shop.querySelector('.sName').value || "SHOP").toUpperCase();
-            let tableData = [];
-            shop.querySelectorAll('.row').forEach(row => {
-                const [price, code, pName] = row.querySelector('.pData').value.split('|');
-                const sold = row.querySelector('.pSold').value;
-                const stock = row.querySelector('.pStock').value;
-                const total = (parseFloat(price) * parseInt(sold)).toFixed(2);
-                tableData.push([code, pName, sold, stock, "$" + total]);
+            const sName = (shop.querySelector('.sName').value || "SHOP").toUpperCase();
+            let table = [];
+            let sub = 0;
+            shop.querySelectorAll('.row').forEach(r => {
+                const [price, code, name] = r.querySelector('.pData').value.split('|');
+                const sold = r.querySelector('.pSold').value;
+                const total = (price * sold);
+                sub += total;
+                table.push([code, name, sold, "$" + price, "$" + total.toFixed(2)]);
             });
 
             doc.setTextColor(0);
-            doc.text("SHOP: " + name, 14, y);
-            doc.autoTable({ startY: y + 2, head: [['Code', 'Product', 'Sold', 'Stock', 'Total']], body: tableData });
-            y = doc.lastAutoTable.finalY + 10;
+            doc.setFontSize(12);
+            doc.text(`SHOP: ${sName} (Total: $${sub.toFixed(2)})`, 14, y);
+            doc.autoTable({ startY: y + 2, head: [['Code', 'Item', 'Qty', 'Price', 'Total']], body: table });
+            y = doc.lastAutoTable.finalY + 12;
+            if(y > 260) { doc.addPage(); y = 20; }
         });
 
-        // --- PDF BRANDING FOOTER ---
-        doc.setFontSize(9);
+        doc.setFontSize(10);
         doc.setTextColor(150);
-        const footerY = 285;
-        doc.text(`Developed by: ${ARSHAD} | WhatsApp: ${+243902702275}`, 105, footerY, { align: "center" });
+        doc.text(`Developed by: ARSHAD | WhatsApp: +243 902 702 275`, 105, 290, { align: "center" });
 
-        // iPhone fix
         const pdfBlob = doc.output('blob');
         const url = URL.createObjectURL(pdfBlob);
         const link = document.createElement('a');
@@ -221,7 +206,8 @@
         link.click();
     }
 
-    if(localStorage.getItem('isLoggedIn') === 'true' && document.querySelectorAll('.shop-box').length === 0) addShop();
+    if(localStorage.getItem('userAuthed') === 'true' && document.querySelectorAll('.shop-box').length === 0) addShop();
 </script>
 </body>
 </html>
+
