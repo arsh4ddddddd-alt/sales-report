@@ -2,80 +2,78 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Global Sales - ARSHAD</title>
+    <title>Global Sales - ARSHAD PRO</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    
     <style>
         :root { --blue: #1a73e8; --green: #28a745; --dark: #202124; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f8f9fa; margin: 0; padding: 10px; color: var(--dark); -webkit-font-smoothing: antialiased; }
+        body { font-family: -apple-system, sans-serif; background: #f8f9fa; margin: 0; padding: 10px; color: var(--dark); }
         
-        /* Layout Containers */
         .card { background: white; border-radius: 12px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 15px; }
         .shop-box { border: 1px solid #ddd; border-left: 6px solid var(--blue); padding: 15px; border-radius: 10px; margin-bottom: 15px; position: relative; background: #fff; }
         
-        /* Mobile Friendly Inputs */
-        .row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; align-items: flex-end; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px; }
+        /* Mode Switcher */
+        .mode-selector { display: flex; background: #eee; border-radius: 10px; padding: 4px; margin-bottom: 15px; }
+        .mode-btn { flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; background: none; color: #666; }
+        .mode-btn.active { background: white; color: var(--blue); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+        .date-row { display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 10px; }
+        .date-row input { border: 1px solid #ddd; padding: 8px; border-radius: 8px; font-size: 14px; }
+
+        .row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px; }
         .row > div { flex: 1; min-width: 70px; }
-        .row > div:first-child { flex: 3; min-width: 150px; } /* Product dropdown gets more space */
+        .row > div:first-child { flex: 3; min-width: 150px; }
         
-        label { font-size: 11px; color: #777; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 4px; }
-        input, select { width: 100%; height: 45px; padding: 8px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; background: #fff; appearance: none; -webkit-appearance: none; }
+        label { font-size: 11px; color: #777; font-weight: 600; display: block; margin-bottom: 4px; }
+        input, select { width: 100%; height: 45px; padding: 8px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; background: #fff; }
         
-        /* Buttons */
-        .btn { border: none; border-radius: 10px; font-weight: bold; cursor: pointer; text-align: center; transition: opacity 0.2s; }
-        .btn:active { opacity: 0.7; }
-        .btn-blue { background: var(--blue); color: white; padding: 12px; width: 100%; margin-top: 10px; font-size: 14px; }
-        .btn-green { background: var(--green); color: white; padding: 18px; width: 100%; font-size: 18px; box-shadow: 0 4px 12px rgba(40,167,69,0.2); }
-        .btn-del { background: #ff4d4d; color: white; width: 40px; height: 45px; font-size: 20px; line-height: 45px; padding: 0; }
+        .btn { border: none; border-radius: 10px; font-weight: bold; cursor: pointer; text-align: center; }
+        .btn-blue { background: var(--blue); color: white; padding: 12px; width: 100%; margin-top: 10px; }
+        .btn-green { background: var(--green); color: white; padding: 18px; width: 100%; font-size: 18px; margin-top: 15px; }
+        .btn-del { background: #ff4d4d; color: white; width: 40px; height: 45px; font-size: 20px; }
 
         .total-banner { background: var(--dark); color: white; padding: 15px; border-radius: 10px; text-align: right; font-weight: bold; font-size: 22px; margin: 15px 0; }
-
-        /* History Table */
-        .history-section { margin-top: 25px; border-top: 2px solid #eee; padding-top: 15px; }
+        .history-section { margin-top: 25px; border-top: 2px solid #eee; }
         table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        th { text-align: left; padding: 10px; background: #f0f0f0; border-radius: 5px; }
-        td { padding: 12px 10px; border-bottom: 1px solid #eee; }
+        td, th { padding: 12px 10px; border-bottom: 1px solid #eee; text-align: left; }
         .view-link { color: var(--blue); font-weight: bold; text-decoration: none; border: 1px solid var(--blue); padding: 4px 8px; border-radius: 5px; }
-
-        .footer { text-align: center; padding: 25px; color: #999; font-size: 12px; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-<div class="card" style="text-align:center">
-    <h2 style="margin:0; color:var(--blue); font-size: 20px;">DYNAPHARM SALES REPORT</h2>
-    <input type="date" id="reportDate" style="border:none; text-align:center; font-weight:bold; color:#555; width:auto; height:auto; margin-top:5px;">
+<div class="card">
+    <div class="mode-selector">
+        <button class="mode-btn active" id="dailyBtn" onclick="setMode('daily')">DAILY REPORT</button>
+        <button class="mode-btn" id="weeklyBtn" onclick="setMode('weekly')">WEEKLY REPORT</button>
+    </div>
+
+    <div id="dailyDateGroup" class="date-row">
+        <label>Date:</label>
+        <input type="date" id="reportDate">
+    </div>
+
+    <div id="weeklyDateGroup" class="date-row hidden">
+        <div><label>From:</label><input type="date" id="dateFrom"></div>
+        <div><label>To:</label><input type="date" id="dateTo"></div>
+    </div>
 </div>
 
 <div id="shopsContainer"></div>
 
-<div class="total-banner">
-    TOTAL: $<span id="grandTotal">0.00</span>
-</div>
+<div class="total-banner">TOTAL: $<span id="grandTotal">0.00</span></div>
 
 <button class="btn btn-blue" onclick="addShop()">+ ADD ANOTHER SHOP</button>
-<div style="margin: 15px 0;">
-    <button class="btn btn-green" onclick="processReport()">DOWNLOAD & SAVE PDF</button>
-</div>
+<button class="btn btn-green" onclick="processReport()">DOWNLOAD & SAVE PDF</button>
 
 <div class="card history-section">
     <h3 style="margin-top:0">Report History</h3>
-    <div id="historyList">
-        <p style="color:#aaa; font-style:italic; font-size:13px;">No reports saved yet.</p>
-    </div>
-    <button onclick="clearHistory()" style="background:none; border:none; color:red; font-size:11px; padding:0; margin-top:10px;">Clear all history</button>
-</div>
-
-<div class="footer">
-    Developed by <b>ARSHAD</b><br>
-    WhatsApp: +243 902 702 275
+    <div id="historyList"><p style="color:#aaa; font-size:13px;">No history yet.</p></div>
 </div>
 
 <script>
-    // Full product list
+    let currentMode = 'daily';
     const products = [
         {code: "DRC1201", name: "CAFE GINKO EN POUDRE ET GINSENG EN POUDR", price: 13.00},
         {code: "DRC1202", name: "CAFÉ DE THE VERT AVEC POUDRE GANODERMA", price: 14.00},
@@ -115,34 +113,46 @@
         {code: "DRC9918", name: "DYNA SERENOA TABLET 100's", price: 28.00}
     ].sort((a,b) => a.name.localeCompare(b.name));
 
-    document.getElementById('reportDate').valueAsDate = new Date();
+    // Initialize Dates
+    const today = new Date();
+    document.getElementById('reportDate').valueAsDate = today;
+    document.getElementById('dateTo').valueAsDate = today;
+    const lastWeek = new Date();
+    lastWeek.setDate(today.getDate() - 7);
+    document.getElementById('dateFrom').valueAsDate = lastWeek;
 
-    function addShop() {
-        const container = document.getElementById('shopsContainer');
-        const shopDiv = document.createElement('div');
-        shopDiv.className = 'shop-box';
-        shopDiv.innerHTML = `
-            <input type="text" class="shop-name" placeholder="Enter Shop Name" style="margin-bottom:15px; border-bottom:2px solid var(--blue); font-weight:bold;">
-            <div class="items-list"></div>
-            <button class="btn btn-blue" onclick="addItem(this.previousElementSibling)" style="background:#eee; color:#333; margin-top:5px;">+ Add Item</button>
-            <button onclick="this.parentElement.remove(); updateGrandTotal();" style="position:absolute; top:5px; right:5px; border:none; background:none; color:red; font-size:20px;">×</button>
-        `;
-        container.appendChild(shopDiv);
-        addItem(shopDiv.querySelector('.items-list'));
+    function setMode(mode) {
+        currentMode = mode;
+        document.getElementById('dailyBtn').classList.toggle('active', mode === 'daily');
+        document.getElementById('weeklyBtn').classList.toggle('active', mode === 'weekly');
+        document.getElementById('dailyDateGroup').classList.toggle('hidden', mode === 'weekly');
+        document.getElementById('weeklyDateGroup').classList.toggle('hidden', mode === 'daily');
     }
 
-    function addItem(listContainer) {
+    function addShop() {
+        const div = document.createElement('div');
+        div.className = 'shop-box';
+        div.innerHTML = `
+            <input type="text" class="shop-name" placeholder="Enter Shop Name" style="margin-bottom:15px; border-bottom:2px solid var(--blue); font-weight:bold;">
+            <div class="items-list"></div>
+            <button class="btn btn-blue" onclick="addItem(this.previousElementSibling)" style="background:#eee; color:#333;">+ Add Product</button>
+            <button onclick="this.parentElement.remove(); updateGrandTotal();" style="position:absolute; top:5px; right:5px; border:none; background:none; color:red; font-size:20px;">×</button>
+        `;
+        document.getElementById('shopsContainer').appendChild(div);
+        addItem(div.querySelector('.items-list'));
+    }
+
+    function addItem(container) {
         const row = document.createElement('div');
         row.className = 'row';
         let options = products.map(p => `<option value="${p.price}|${p.code}|${p.name}">${p.name}</option>`).join('');
-        
         row.innerHTML = `
             <div><label>Product</label><select class="p-select" onchange="updateGrandTotal()">${options}</select></div>
             <div><label>Qty</label><input type="number" class="p-qty" value="0" oninput="updateGrandTotal()" onfocus="this.select()"></div>
             <div><label>Stock</label><input type="number" class="p-stock" value="0"></div>
             <button class="btn btn-del" onclick="this.parentElement.remove(); updateGrandTotal();">×</button>
         `;
-        listContainer.appendChild(row);
+        container.appendChild(row);
         updateGrandTotal();
     }
 
@@ -159,13 +169,19 @@
     function processReport() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        const date = document.getElementById('reportDate').value;
-        const total = document.getElementById('grandTotal').innerText;
+        
+        let title = "DAILY SALES REPORT";
+        let dateLabel = document.getElementById('reportDate').value;
+        
+        if(currentMode === 'weekly') {
+            title = "WEEKLY SALES REPORT";
+            dateLabel = `From: ${document.getElementById('dateFrom').value} To: ${document.getElementById('dateTo').value}`;
+        }
 
         doc.setFontSize(20);
-        doc.text("GLOBAL SALES REPORT", 105, 15, { align: "center" });
+        doc.text(title, 105, 15, { align: "center" });
         doc.setFontSize(10);
-        doc.text("Date: " + date, 14, 25);
+        doc.text(dateLabel, 14, 25);
 
         let yPos = 35;
         document.querySelectorAll('.shop-box').forEach(box => {
@@ -182,14 +198,12 @@
             yPos = doc.lastAutoTable.finalY + 10;
         });
 
-        // Save to History
         const pdfData = doc.output('datauristring');
         const history = JSON.parse(localStorage.getItem('arshad_history') || '[]');
-        history.unshift({ date, total, file: pdfData });
-        if(history.length > 15) history.pop();
+        history.unshift({ date: dateLabel, total: document.getElementById('grandTotal').innerText, file: pdfData });
         localStorage.setItem('arshad_history', JSON.stringify(history));
 
-        doc.save(`Sales_${date}.pdf`);
+        doc.save(`${title.replace(/ /g,'_')}.pdf`);
         renderHistory();
     }
 
@@ -197,26 +211,17 @@
         const history = JSON.parse(localStorage.getItem('arshad_history') || '[]');
         const container = document.getElementById('historyList');
         if(history.length === 0) return;
-        
-        let html = '<table><thead><tr><th>Date</th><th>Total</th><th>PDF</th></tr></thead><tbody>';
+        let html = '<table><thead><tr><th>Date Range</th><th>Total</th><th>PDF</th></tr></thead><tbody>';
         history.forEach((item, idx) => {
             html += `<tr><td>${item.date}</td><td>$${item.total}</td><td><a href="#" class="view-link" onclick="viewPdf(${idx})">OPEN</a></td></tr>`;
         });
-        html += '</tbody></table>';
-        container.innerHTML = html;
+        container.innerHTML = html + '</tbody></table>';
     }
 
     function viewPdf(index) {
         const history = JSON.parse(localStorage.getItem('arshad_history') || '[]');
-        const pdfWindow = window.open("");
-        pdfWindow.document.write(`<iframe width='100%' height='100%' src='${history[index].file}'></iframe>`);
-    }
-
-    function clearHistory() {
-        if(confirm("Clear all history?")) {
-            localStorage.removeItem('arshad_history');
-            location.reload();
-        }
+        const win = window.open("");
+        win.document.write(`<iframe width='100%' height='100%' src='${history[index].file}'></iframe>`);
     }
 
     window.onload = () => { addShop(); renderHistory(); };
