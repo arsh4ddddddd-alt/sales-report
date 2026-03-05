@@ -2,91 +2,80 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Global Sales - DYNAPHARM</title>
+    <title>ARSHAD CLOUD SALES</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Your Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAQoBJhPYyYfvPSWsWse3OgfMxNmd24iXQ",
+            authDomain: "business-arshad.firebaseapp.com",
+            projectId: "business-arshad",
+            storageBucket: "business-arshad.firebasestorage.app",
+            messagingSenderId: "1097198781152",
+            appId: "1:1097198781152:web:67f22b2dc944c93b240685",
+            measurementId: "G-PPKMLCT9WH"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        window.db = db; // Make global for our script
+    </script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
     <style>
         :root { --blue: #1a73e8; --green: #28a745; --dark: #202124; }
-        body { font-family: -apple-system, sans-serif; background: #f8f9fa; margin: 0; padding: 10px; color: var(--dark); }
-        
-        .card { background: white; border-radius: 12px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 15px; }
-        .shop-box { border: 1px solid #ddd; border-left: 6px solid var(--blue); padding: 15px; border-radius: 10px; margin-bottom: 15px; position: relative; background: #fff; }
-        
-        /* Mode Switcher */
-        .mode-selector { display: flex; background: #eee; border-radius: 10px; padding: 4px; margin-bottom: 15px; }
-        .mode-btn { flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; background: none; color: #666; font-size: 13px; }
-        .mode-btn.active { background: white; color: var(--blue); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-
-        .date-row { display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 10px; }
-        .date-row div { flex: 1; }
-        label { font-size: 11px; color: #777; font-weight: 600; display: block; margin-bottom: 4px; }
-        input, select { width: 100%; height: 45px; padding: 8px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; background: #fff; box-sizing: border-box; }
-
-        .row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px; }
-        .row > div { flex: 1; min-width: 70px; }
-        .row > div:first-child { flex: 3; min-width: 150px; }
-        
-        .btn { border: none; border-radius: 10px; font-weight: bold; cursor: pointer; text-align: center; }
-        .btn-blue { background: var(--blue); color: white; padding: 12px; width: 100%; margin-top: 10px; }
-        .btn-green { background: var(--green); color: white; padding: 18px; width: 100%; font-size: 18px; margin-top: 15px; }
-        .btn-del { background: #ff4d4d; color: white; width: 40px; height: 45px; font-size: 20px; }
-
-        .total-banner { background: var(--dark); color: white; padding: 15px; border-radius: 10px; text-align: right; font-weight: bold; font-size: 22px; margin: 15px 0; }
-        .history-section { margin-top: 25px; border-top: 2px solid #eee; }
-        table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        td, th { padding: 12px 10px; border-bottom: 1px solid #eee; text-align: left; }
-        .view-link { color: var(--blue); font-weight: bold; text-decoration: none; border: 1px solid var(--blue); padding: 4px 8px; border-radius: 5px; }
-        
-        .dev-tag { text-align: center; padding: 20px; color: #888; font-size: 13px; line-height: 1.5; }
-        .hidden { display: none !important; }
+        body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 10px; }
+        .card { background: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        .mode-selector { display: flex; background: #e4e6eb; border-radius: 10px; padding: 4px; margin-bottom: 15px; }
+        .mode-btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; background: none; color: #65676b; cursor: pointer; }
+        .mode-btn.active { background: white; color: var(--blue); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .shop-box { border-left: 6px solid var(--blue); padding: 15px; background: #fff; border-radius: 10px; margin-bottom: 15px; border-top: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee; position: relative; }
+        .row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #f0f2f5; }
+        input, select { height: 45px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; padding: 8px; width: 100%; box-sizing: border-box; }
+        .btn { border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-green { background: var(--green); color: white; width: 100%; padding: 20px; font-size: 18px; margin-top: 10px; }
+        .total-banner { background: var(--dark); color: white; padding: 15px; border-radius: 10px; text-align: right; font-size: 24px; font-weight: bold; margin: 15px 0; }
+        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-<div class="card" style="text-align: center; border-bottom: 3px solid var(--blue);">
-    <h2 style="margin:0; color:var(--blue);"> DYNAPHARM SALES REPORT</h2>
-    <p style="margin:5px 0 0; font-size:12px; color:#666;">+243 902 702 275</p>
+<div class="card" style="text-align: center;">
+    <h2 style="margin:0; color:var(--blue);">ARSHAD CLOUD SYSTEM</h2>
+    <p style="margin:5px 0; font-size:12px; color:#666;">WHATSAPP: +243 902 702 275</p>
 </div>
 
 <div class="card">
     <div class="mode-selector">
-        <button class="mode-btn active" id="dailyBtn" onclick="setMode('daily')">DAILY REPORT</button>
-        <button class="mode-btn" id="weeklyBtn" onclick="setMode('weekly')">WEEKLY SALES</button>
+        <button class="mode-btn active" onclick="setMode('daily', this)">DAILY</button>
+        <button class="mode-btn" onclick="setMode('weekly', this)">WEEKLY</button>
     </div>
-
-    <div id="dailyDateGroup" class="date-row">
-        <div style="text-align:center;">
-            <label>Select Date</label>
-            <input type="date" id="reportDate" style="width: 200px;">
-        </div>
-    </div>
-
-    <div id="weeklyDateGroup" class="date-row hidden">
-        <div><label>From Date:</label><input type="date" id="dateFrom"></div>
-        <div><label>To Date:</label><input type="date" id="dateTo"></div>
+    <div id="dateArea">
+        <input type="date" id="reportDate">
     </div>
 </div>
 
 <div id="shopsContainer"></div>
+<button class="btn" style="background:#e8f0fe; color:var(--blue); width:100%; padding:15px; margin-bottom:10px;" onclick="addShop()">+ ADD SHOP</button>
 
 <div class="total-banner">TOTAL: $<span id="grandTotal">0.00</span></div>
 
-<button class="btn btn-blue" onclick="addShop()">+ ADD SHOP ENTRY</button>
-<button class="btn btn-green" onclick="processReport()">DOWNLOAD PDF REPORT</button>
+<button class="btn btn-green" onclick="saveAndDownload()">SUBMIT TO CLOUD & PDF</button>
 
-<div class="card history-section">
-    <h3 style="margin-top:0; color:var(--blue);">Saved History</h3>
-    <div id="historyList"><p style="color:#aaa; font-size:13px;">No history available yet.</p></div>
-</div>
-
-<div class="dev-tag">
-    Developed by: <b>ARSHAD</b><br>
-    WhatsApp: <b>+243 902 702 275</b>
+<div class="card" style="margin-top:20px;">
+    <h3 style="margin-top:0; color:var(--blue);">Cloud History (Real-Time)</h3>
+    <div id="historyList">Loading history...</div>
 </div>
 
 <script>
-    let currentMode = 'daily';
+    let mode = 'daily';
     const products = [
         {code: "DRC1201", name: "CAFE GINKO EN POUDRE ET GINSENG EN POUDR", price: 13.00},
         {code: "DRC1202", name: "CAFÉ DE THE VERT AVEC POUDRE GANODERMA", price: 14.00},
@@ -126,128 +115,106 @@
         {code: "DRC9918", name: "DYNA SERENOA TABLET 100's", price: 28.00}
     ].sort((a,b) => a.name.localeCompare(b.name));
 
-    const today = new Date();
-    document.getElementById('reportDate').valueAsDate = today;
-    document.getElementById('dateTo').valueAsDate = today;
-    const lastWeek = new Date(); lastWeek.setDate(today.getDate() - 7);
-    document.getElementById('dateFrom').valueAsDate = lastWeek;
+    document.getElementById('reportDate').valueAsDate = new Date();
 
-    function setMode(mode) {
-        currentMode = mode;
-        document.getElementById('dailyBtn').classList.toggle('active', mode === 'daily');
-        document.getElementById('weeklyBtn').classList.toggle('active', mode === 'weekly');
-        document.getElementById('dailyDateGroup').classList.toggle('hidden', mode === 'weekly');
-        document.getElementById('weeklyDateGroup').classList.toggle('hidden', mode === 'daily');
+    function setMode(m, btn) {
+        mode = m;
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('dateArea').innerHTML = (m === 'daily') ? 
+            '<input type="date" id="reportDate">' : 
+            '<div style="display:flex;gap:5px;"><input type="date" id="dateFrom"><input type="date" id="dateTo"></div>';
     }
 
     function addShop() {
         const div = document.createElement('div');
         div.className = 'shop-box';
-        div.innerHTML = `
-            <input type="text" class="shop-name" placeholder="SHOP NAME" style="margin-bottom:15px; border-bottom:2px solid var(--blue); font-weight:bold;">
-            <div class="items-list"></div>
-            <button class="btn btn-blue" onclick="addItem(this.previousElementSibling)" style="background:#eee; color:#333; font-size:12px;">+ Add Product</button>
-            <button onclick="this.parentElement.remove(); updateGrandTotal();" style="position:absolute; top:5px; right:5px; border:none; background:none; color:red; font-size:20px;">×</button>
-        `;
+        div.innerHTML = `<input type="text" class="sName" placeholder="SHOP NAME" style="font-weight:bold;margin-bottom:10px;"><div class="itemList"></div><button onclick="addItem(this)" style="background:#f0f2f5;border:none;padding:10px;border-radius:5px;width:100%;">+ Product</button>`;
         document.getElementById('shopsContainer').appendChild(div);
-        addItem(div.querySelector('.items-list'));
+        addItem(div.querySelector('button'));
     }
 
-    function addItem(container) {
+    function addItem(btn) {
+        const list = btn.previousElementSibling;
         const row = document.createElement('div');
         row.className = 'row';
-        let options = products.map(p => `<option value="${p.price}|${p.code}|${p.name}">${p.name}</option>`).join('');
-        row.innerHTML = `
-            <div><label>Product</label><select class="p-select" onchange="updateGrandTotal()">${options}</select></div>
-            <div><label>Qty Sold</label><input type="number" class="p-qty" value="0" oninput="updateGrandTotal()" onfocus="this.select()"></div>
-            <div><label>Stock</label><input type="number" class="p-stock" value="0"></div>
-            <button class="btn btn-del" onclick="this.parentElement.remove(); updateGrandTotal();">×</button>
-        `;
-        container.appendChild(row);
-        updateGrandTotal();
+        let opts = products.map(p => `<option value="${p.price}|${p.code}|${p.name}">${p.name}</option>`).join('');
+        row.innerHTML = `<div style="flex:3;"><select class="pData" onchange="calc()">${opts}</select></div><div style="flex:1;"><input type="number" class="pSold" value="0" oninput="calc()" onfocus="this.select()"></div>`;
+        list.appendChild(row);
+        calc();
     }
 
-    function updateGrandTotal() {
+    function calc() {
         let total = 0;
-        document.querySelectorAll('.row').forEach(row => {
-            const price = parseFloat(row.querySelector('.p-select').value.split('|')[0]);
-            const qty = parseInt(row.querySelector('.p-qty').value) || 0;
-            total += (price * qty);
+        document.querySelectorAll('.row').forEach(r => {
+            const price = parseFloat(r.querySelector('.pData').value.split('|')[0]);
+            const sold = parseInt(r.querySelector('.pSold').value) || 0;
+            total += (price * sold);
         });
         document.getElementById('grandTotal').innerText = total.toFixed(2);
     }
 
-    function processReport() {
+    async function saveAndDownload() {
+        const total = document.getElementById('grandTotal').innerText;
+        const dateStr = (mode === 'daily') ? document.getElementById('reportDate').value : 
+            document.getElementById('dateFrom').value + " to " + document.getElementById('dateTo').value;
+
+        // 1. SAVE TO CLOUD (Firebase)
+        try {
+            await addDoc(collection(window.db, "sales_reports"), {
+                date: dateStr,
+                total: total,
+                timestamp: new Date()
+            });
+            alert("SUCCESS: Saved to Cloud Database!");
+        } catch (e) { alert("Error saving: " + e); }
+
+        // 2. GENERATE PDF
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
+        doc.setFontSize(22); doc.text("SALES REPORT", 105, 20, {align:"center"});
+        doc.setFontSize(12); doc.text(dateStr, 105, 30, {align:"center"});
         
-        let title = "DAILY SALES REPORT";
-        let dateLabel = document.getElementById('reportDate').value;
-        if(currentMode === 'weekly') {
-            title = "WEEKLY SALES REPORT";
-            dateLabel = "Period: " + document.getElementById('dateFrom').value + " TO " + document.getElementById('dateTo').value;
-        }
-
-        // PDF HEADER
-        doc.setFontSize(22);
-        doc.setTextColor(26, 115, 232);
-        doc.text(title, 105, 15, { align: "center" });
-        doc.setFontSize(10);
-        doc.setTextColor(100);
-        doc.text(dateLabel, 105, 22, { align: "center" });
-
-        let yPos = 35;
-        document.querySelectorAll('.shop-box').forEach(box => {
-            const name = box.querySelector('.shop-name').value || "SHOP";
-            let rows = [];
-            box.querySelectorAll('.row').forEach(r => {
-                const [price, code, pName] = r.querySelector('.p-select').value.split('|');
-                const qty = r.querySelector('.p-qty').value;
-                rows.push([code, pName, qty, "$" + price, "$" + (price * qty).toFixed(2)]);
+        let y = 45;
+        document.querySelectorAll('.shop-box').forEach(s => {
+            const name = s.querySelector('.sName').value || "SHOP";
+            let items = [];
+            s.querySelectorAll('.row').forEach(r => {
+                const [pr, cd, nm] = r.querySelector('.pData').value.split('|');
+                const qty = r.querySelector('.pSold').value;
+                items.push([cd, nm, qty, "$"+pr, "$"+(pr*qty).toFixed(2)]);
             });
-            doc.setFontSize(12);
-            doc.setTextColor(0);
-            doc.text("SHOP: " + name.toUpperCase(), 14, yPos);
-            doc.autoTable({ startY: yPos + 2, head: [['Code', 'Product', 'Qty', 'Price', 'Total']], body: rows, headStyles: {fillColor: [26, 115, 232]} });
-            yPos = doc.lastAutoTable.finalY + 12;
-            if(yPos > 270) { doc.addPage(); yPos = 20; }
+            doc.text("SHOP: " + name.toUpperCase(), 14, y);
+            doc.autoTable({startY: y+2, head:[['Code','Item','Qty','Price','Total']], body:items});
+            y = doc.lastAutoTable.finalY + 10;
         });
 
-        // FOOTER WITH YOUR NAME & NUMBER
+        // Developer Branding on PDF
         doc.setFontSize(10);
-        doc.setTextColor(150);
-        doc.text("--------------------------------------------------------------------------------", 105, 280, {align: "center"});
-        doc.setFontSize(11);
-        doc.text("System Managed by: ARSHAD", 105, 286, { align: "center" });
-        doc.text("Contact: +243 902 702 275", 105, 292, { align: "center" });
-
-        const pdfData = doc.output('datauristring');
-        const history = JSON.parse(localStorage.getItem('arshad_history') || '[]');
-        history.unshift({ date: dateLabel, total: document.getElementById('grandTotal').innerText, file: pdfData });
-        localStorage.setItem('arshad_history', JSON.stringify(history));
-
-        doc.save(`${title.replace(/ /g,'_')}.pdf`);
-        renderHistory();
+        doc.text("--------------------------------------------------", 105, 280, {align:"center"});
+        doc.text("Managed by ARSHAD (+243 902 702 275)", 105, 285, {align:"center"});
+        doc.save(`Report_${dateStr}.pdf`);
     }
 
-    function renderHistory() {
-        const history = JSON.parse(localStorage.getItem('arshad_history') || '[]');
-        const container = document.getElementById('historyList');
-        if(history.length === 0) return;
-        let html = '<table><thead><tr><th>Date/Period</th><th>Total</th><th>Action</th></tr></thead><tbody>';
-        history.forEach((item, idx) => {
-            html += `<tr><td><small>${item.date}</small></td><td><b>$${item.total}</b></td><td><a href="#" class="view-link" onclick="viewPdf(${idx})">OPEN</a></td></tr>`;
+    // REAL-TIME CLOUD HISTORY
+    function loadHistory() {
+        const q = query(collection(window.db, "sales_reports"), orderBy("timestamp", "desc"));
+        onSnapshot(q, (snapshot) => {
+            const list = document.getElementById('historyList');
+            list.innerHTML = "";
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                list.innerHTML += `
+                    <div class="history-item">
+                        <div><small>${data.date}</small><br><b>$${data.total}</b></div>
+                        <div style="color:var(--green); font-size:12px;">Cloud Synced ✓</div>
+                    </div>
+                `;
+            });
         });
-        container.innerHTML = html + '</tbody></table>';
     }
 
-    function viewPdf(index) {
-        const history = JSON.parse(localStorage.getItem('arshad_history') || '[]');
-        const win = window.open("");
-        win.document.write(`<iframe width='100%' height='100%' src='${history[index].file}' frameborder='0'></iframe>`);
-    }
-
-    window.onload = () => { addShop(); renderHistory(); };
+    window.onload = () => { addShop(); setTimeout(loadHistory, 2000); };
 </script>
 </body>
 </html>
