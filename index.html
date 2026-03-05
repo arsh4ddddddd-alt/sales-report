@@ -5,9 +5,11 @@
     <title>DYNAPHARM SALES REPORT</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAQoBJhPYyYfvPSWsWse3OgfMxNmd24iXQ",
@@ -15,168 +17,147 @@
             projectId: "business-arshad",
             storageBucket: "business-arshad.firebasestorage.app",
             messagingSenderId: "1097198781152",
-            appId: "1:1097198781152:web:67f22b2dc944c93b240685",
-            measurementId: "G-PPKMLCT9WH"
+            appId: "1:1097198781152:web:67f22b2dc944c93b240685"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        window.db = db;
+
+        // Function to save to Database AND generate PDF
+        window.processReport = async (type) => {
+            let data = { type: type, timestamp: new Date() };
+            let title = "";
+
+            if(type === 'sales') {
+                title = "Daily Sales";
+                data.shop = document.getElementById('sLoc').value;
+                data.amount = document.getElementById('sAmt').value;
+                if(!data.shop || !data.amount) return alert("Fill all fields");
+            } else if(type === 'banking') {
+                title = "Banking Tracker";
+                data.bank = document.getElementById('bName').value;
+                data.amount = document.getElementById('bAmt').value;
+                if(!data.amount) return alert("Enter amount");
+            } else if(type === 'stock') {
+                title = "Stock Level";
+                data.item = document.getElementById('pName').value;
+                data.qty = document.getElementById('pQty').value;
+                if(!data.item || !data.qty) return alert("Fill all fields");
+            }
+
+            try {
+                // 1. SAVE TO DATABASE
+                await addDoc(collection(db, "arshad_business_logs"), data);
+                
+                // 2. GENERATE PDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.setFontSize(22);
+                doc.setTextColor(0, 70, 173);
+                doc.text("DYNAPHARM " + title.toUpperCase(), 20, 30);
+                doc.setFontSize(14);
+                doc.setTextColor(0,0,0);
+                doc.text("Date: " + new Date().toLocaleString(), 20, 50);
+                
+                let y = 70;
+                for (const [key, value] of Object.entries(data)) {
+                    if(key !== 'type' && key !== 'timestamp') {
+                        doc.text(`${key.toUpperCase()}: ${value}`, 20, y);
+                        y += 10;
+                    }
+                }
+                doc.setFontSize(10);
+                doc.text("DEVELOPER: ARSHAD (+243 902 702 275)", 20, 200);
+                doc.save(`Dynapharm_${type}.pdf`);
+
+                alert("SUCCESS: Data saved to Cloud and PDF Generated!");
+                location.reload();
+            } catch (e) {
+                alert("Cloud Error: " + e.message);
+            }
+        };
     </script>
 
     <style>
-        :root { --blue: #0046ad; --gold: #ffd700; --dark: #1a1a1a; --gray: #f4f7f6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--gray); margin: 0; padding: 0; color: var(--dark); }
-        
-        /* Header */
-        .header { background: var(--blue); color: white; padding: 25px 15px; text-align: center; border-bottom: 5px solid var(--gold); }
-        .header h1 { margin: 0; font-size: 22px; letter-spacing: 1px; }
-
-        /* Navigation Menu */
-        .nav-container { display: flex; overflow-x: auto; background: white; padding: 10px; gap: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); sticky: top; }
-        .nav-item { flex: 0 0 auto; padding: 12px 20px; border-radius: 50px; border: none; background: #eee; font-weight: bold; cursor: pointer; white-space: nowrap; }
-        .nav-item.active { background: var(--blue); color: white; }
-
-        /* Content Areas */
-        .page { padding: 15px; display: none; }
-        .page.active { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        
-        /* Form Styling */
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
-        label { font-weight: bold; color: var(--blue); font-size: 14px; }
-
-        .btn-main { background: var(--blue); color: white; border: none; width: 100%; padding: 15px; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        
-        /* Advertisement Footer */
-        .footer { text-align: center; padding: 30px 15px; color: #888; font-size: 13px; }
-        .dev-tag { color: var(--blue); font-weight: bold; text-decoration: none; display: block; margin-top: 5px; }
-
-        /* Stats */
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .stat-box { background: var(--blue); color: white; padding: 15px; border-radius: 10px; text-align: center; }
+        :root { --blue: #0046ad; --gold: #ffd700; --gray: #f4f7f6; }
+        body { font-family: sans-serif; background: var(--gray); margin: 0; padding: 0; }
+        .header { background: var(--blue); color: white; padding: 25px; text-align: center; border-bottom: 4px solid var(--gold); }
+        .nav { display: flex; background: white; padding: 10px; gap: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .nav button { flex: 1; padding: 12px; border: none; border-radius: 5px; background: #eee; font-weight: bold; font-size: 11px; }
+        .nav button.active { background: var(--blue); color: white; }
+        .page { padding: 20px; display: none; }
+        .page.active { display: block; }
+        .card { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        label { display: block; margin-top: 15px; font-weight: bold; color: var(--blue); }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 16px; }
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 8px; color: white; font-weight: bold; font-size: 16px; margin-top: 20px; cursor: pointer; }
+        .footer { text-align: center; padding: 30px; color: #777; font-size: 13px; }
+        .dev-info { color: var(--blue); font-weight: bold; text-decoration: none; display: block; margin-top: 5px; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>DYNAPHARM SALES REPORT</h1>
+    <h2 style="margin:0">DYNAPHARM SALES REPORT</h2>
 </div>
 
-<div class="nav-container">
-    <button class="nav-item active" onclick="showPage('sales', this)">💰 DAILY SALES</button>
-    <button class="nav-item" onclick="showPage('banking', this)">🏦 BANKING</button>
-    <button class="nav-item" onclick="showPage('stock', this)">📦 STOCK LEVELS</button>
+<div class="nav">
+    <button id="tab1" class="active" onclick="showTab('sales')">💰 DAILY SALES</button>
+    <button id="tab2" onclick="showTab('banking')">🏦 BANKING</button>
+    <button id="tab3" onclick="showTab('stock')">📦 STOCK</button>
 </div>
 
 <div id="sales" class="page active">
     <div class="card">
-        <label>Select Date</label>
-        <input type="date" id="saleDate">
-        <label>Shop Name / Location</label>
-        <input type="text" id="shopName" placeholder="Enter shop name">
-        <label>Total Sales Amount ($)</label>
-        <input type="number" id="saleAmount" placeholder="0.00">
-        <button class="btn-main" onclick="saveData('sales')">SUBMIT DAILY SALES</button>
+        <label>Shop Location</label>
+        <input type="text" id="sLoc" placeholder="e.g. Kinshasa Center">
+        <label>Total Sales ($)</label>
+        <input type="number" id="sAmt" placeholder="0.00">
+        <button class="btn" style="background:var(--blue)" onclick="processReport('sales')">SUBMIT & DOWNLOAD PDF</button>
     </div>
 </div>
 
 <div id="banking" class="page">
     <div class="card">
         <label>Bank Name</label>
-        <select id="bankName">
+        <select id="bName">
             <option>Equity Bank</option>
             <option>Rawbank</option>
             <option>TMB</option>
-            <option>Mobile Money / M-Pesa</option>
+            <option>M-Pesa</option>
         </select>
-        <label>Deposit Amount ($)</label>
-        <input type="number" id="bankAmount" placeholder="0.00">
-        <label>Reference / Slip Number</label>
-        <input type="text" id="bankRef" placeholder="Optional">
-        <button class="btn-main" style="background:#28a745" onclick="saveData('banking')">LOG DEPOSIT</button>
+        <label>Amount Deposited ($)</label>
+        <input type="number" id="bAmt" placeholder="0.00">
+        <button class="btn" style="background:#28a745" onclick="processReport('banking')">LOG DEPOSIT & PDF</button>
     </div>
 </div>
 
 <div id="stock" class="page">
     <div class="card">
         <label>Product Name</label>
-        <input type="text" id="stockItem" placeholder="e.g. Cafe Ginko">
-        <label>Current Quantity Remaining</label>
-        <input type="number" id="stockQty" placeholder="Items left in shelf">
-        <button class="btn-main" style="background:#ff8800" onclick="saveData('stock')">UPDATE STOCK</button>
-    </div>
-</div>
-
-<div class="page active" style="padding-top:0;">
-    <div class="card">
-        <h3 style="margin-top:0; color:var(--blue);">Real-Time Business Activity</h3>
-        <div id="cloudLogs" style="font-size: 14px;">Connecting to cloud...</div>
+        <input type="text" id="pName" placeholder="Product Name">
+        <label>Quantity Remaining</label>
+        <input type="number" id="pQty" placeholder="Items left">
+        <button class="btn" style="background:#ff8800" onclick="processReport('stock')">UPDATE STOCK & PDF</button>
     </div>
 </div>
 
 <div class="footer">
     DEVELOPED BY:<br>
-    <a href="tel:+243902702275" class="dev-tag">ARSHAD: +243 902 702 275</a>
+    <a href="tel:+243902702275" class="dev-info">ARSHAD: +243 902 702 275</a>
     <p>© 2026 DYNAPHARM DRC</p>
 </div>
 
 <script>
-    function showPage(pageId, btn) {
+    function showTab(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
-        btn.classList.add('active');
+        document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if(id === 'sales') document.getElementById('tab1').classList.add('active');
+        if(id === 'banking') document.getElementById('tab2').classList.add('active');
+        if(id === 'stock') document.getElementById('tab3').classList.add('active');
     }
-
-    async function saveData(type) {
-        let payload = { type: type, timestamp: new Date() };
-        
-        if(type === 'sales') {
-            payload.date = document.getElementById('saleDate').value;
-            payload.shop = document.getElementById('shopName').value;
-            payload.amount = document.getElementById('saleAmount').value;
-        } else if(type === 'banking') {
-            payload.bank = document.getElementById('bankName').value;
-            payload.amount = document.getElementById('bankAmount').value;
-            payload.ref = document.getElementById('bankRef').value;
-        } else if(type === 'stock') {
-            payload.item = document.getElementById('stockItem').value;
-            payload.qty = document.getElementById('stockQty').value;
-        }
-
-        try {
-            await window.db.collection("arshad_business_logs").add(payload);
-            alert("SUCCESS: Data synced to Cloud!");
-            location.reload(); 
-        } catch (e) { alert("Error: " + e); }
-    }
-
-    function loadLogs() {
-        const q = window.db.collection("arshad_business_logs").orderBy("timestamp", "desc").limit(10);
-        onSnapshot(q, (snapshot) => {
-            const list = document.getElementById('cloudLogs');
-            list.innerHTML = "";
-            snapshot.forEach((doc) => {
-                const d = doc.data();
-                let txt = "";
-                if(d.type === 'sales') txt = `💰 Sales: $${d.amount} at ${d.shop}`;
-                if(d.type === 'banking') txt = `🏦 Banked: $${d.amount} (${d.bank})`;
-                if(d.type === 'stock') txt = `📦 Stock: ${d.item} (${d.qty} left)`;
-                
-                list.innerHTML += `<div style="padding:10px; border-bottom:1px solid #eee;">
-                    <small style="color:#888">${new Date(d.timestamp.seconds*1000).toLocaleTimeString()}</small><br>${txt}
-                </div>`;
-            });
-        });
-    }
-
-    document.getElementById('saleDate').valueAsDate = new Date();
-    setTimeout(loadLogs, 2000);
 </script>
-
 </body>
 </html>
 
