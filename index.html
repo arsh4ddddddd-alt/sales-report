@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Global Sales Reporting System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        body { font-family: -apple-system, sans-serif; padding: 15px; background: #f4f7f9; color: #333; padding-bottom: 80px; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 800px; margin: auto; }
+        h2 { text-align: center; color: #1a73e8; margin-bottom: 5px; text-transform: uppercase; }
+        .date-input { text-align: center; margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+        .shop-box { border: 2px solid #1a73e8; padding: 15px; border-radius: 8px; margin-bottom: 20px; background: #fff; position: relative; }
+        .item-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        label { font-weight: bold; font-size: 11px; color: #555; display: block; margin-bottom: 2px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; box-sizing: border-box; }
+        button { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .add-shop { background: #444; color: white; }
+        .add-item { background: #e8f0fe; color: #1a73e8; border: 1px dashed #1a73e8; }
+        .pdf-btn { background: #28a745; color: white; font-size: 18px; margin-top: 25px; box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
+        .remove-btn { background: #ff4d4d; color: white; width: auto; padding: 4px 8px; font-size: 11px; float: right; }
+        
+        /* FOOTER FOR CREATOR CREDIT */
+        .creator-footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            font-size: 14px;
+            color: #777;
+            border-top: 1px solid #ddd;
+        }
+        .creator-footer b { color: #1a73e8; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Global Sales System</h2>
+    <div class="date-input">
+        <label>Target Date</label>
+        <input type="date" id="reportDate">
+    </div>
+
+    <div id="shopsContainer"></div>
+
+    <button class="add-shop" onclick="addShop()">+ ADD NEW SHOP</button>
+    <button class="pdf-btn" onclick="generatePDF()">GENERATE REPORT</button>
+
+    <div class="creator-footer">
+        Developed by: <b>[ARSHAD]</b><br>
+        Contact: <b>[+243902702275]</b>
+    </div>
+</div>
+
+<script>
+    document.getElementById('reportDate').valueAsDate = new Date();
+
+    const productDatabase = [
+        {code: "DRC1201", name: "GINKO POWDER & GINSENG", price: 13.00},
+        {code: "DRC1202", name: "GREEN TEA GANODERMA COFFEE", price: 14.00},
+        {code: "DRC1802A", name: "D.I. LIQUID ALFALFA GUARANA 500ML", price: 20.00},
+        {code: "DRC1804", name: "GANODERMA COFFEE (20x21g)", price: 11.00},
+        {code: "DRC1814", name: "GANODERMA CHOCOLATE", price: 19.00},
+        {code: "DRC2812", name: "HERBA WARISAN MAHARANI", price: 36.00},
+        {code: "DRC4810", name: "TONGKAT ALI COFFEE (20x21g)", price: 11.00}
+    ];
+
+    function addShop() {
+        const container = document.getElementById('shopsContainer');
+        const shopDiv = document.createElement('div');
+        shopDiv.className = 'shop-box';
+        shopDiv.innerHTML = `
+            <button class="remove-btn" onclick="this.parentElement.remove()">Remove</button>
+            <input type="text" class="shopName" placeholder="Enter Shop Name" style="font-weight:bold; border:none; border-bottom:1px solid #ddd; margin-bottom:10px;">
+            <div class="items-list"></div>
+            <button class="add-item" onclick="addItem(this)">+ Add Product</button>
+        `;
+        container.appendChild(shopDiv);
+        addItem(shopDiv.querySelector('.add-item'));
+    }
+
+    function addItem(btn) {
+        const list = btn.parentElement.querySelector('.items-list');
+        const div = document.createElement('div');
+        div.className = 'item-row';
+        let options = productDatabase.map(p => `<option value="${p.price}|${p.code}|${p.name}">${p.code} - ${p.name}</option>`).join('');
+        div.innerHTML = `
+            <div><label>Product</label><select class="pData">${options}</select></div>
+            <div><label>Sold</label><input type="number" class="pSold" value="0"></div>
+            <div><label>Stock</label><input type="number" class="pStock" value="0"></div>
+        `;
+        list.appendChild(div);
+    }
+
+    function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const dateRaw = document.getElementById('reportDate').value;
+
+        doc.setFontSize(18);
+        doc.text("GLOBAL SALES & INVENTORY REPORT", 105, 15, { align: "center" });
+        doc.setFontSize(10);
+        doc.text("Target Date: " + dateRaw, 14, 25);
+
+        let grandTotal = 0;
+        let summaries = [];
+        let details = [];
+
+        document.querySelectorAll('.shop-box').forEach(box => {
+            const name = box.querySelector('.shopName').value.toUpperCase() || "SHOP";
+            let shopTotal = 0;
+            let rows = [];
+            box.querySelectorAll('.item-row').forEach(row => {
+                const [price, code, pName] = row.querySelector('.pData').value.split('|');
+                const sold = parseInt(row.querySelector('.pSold').value) || 0;
+                const stock = row.querySelector('.pStock').value || 0;
+                const total = parseFloat(price) * sold;
+                shopTotal += total;
+                rows.push([code, pName, "$" + parseFloat(price).toFixed(2), sold, stock, "$" + total.toFixed(2)]);
+            });
+            grandTotal += shopTotal;
+            summaries.push([name, "$" + shopTotal.toFixed(2)]);
+            details.push({name, total: shopTotal, rows});
+        });
+
+        doc.autoTable({
+            startY: 30,
+            head: [['Shop Name', 'Total Sales ($)']],
+            body: [...summaries, [{content: 'GRAND TOTAL', styles: {fontStyle: 'bold'}}, {content: "$" + grandTotal.toFixed(2), styles: {fontStyle: 'bold'}}]],
+            headStyles: { fillColor: [44, 62, 80] },
+            theme: 'grid'
+        });
+
+        let currentY = doc.lastAutoTable.finalY + 10;
+        details.forEach(shop => {
+            if (currentY > 260) { doc.addPage(); currentY = 20; }
+            doc.setFontSize(12);
+            doc.text(`DETAIL: ${shop.name}`, 14, currentY);
+            doc.autoTable({
+                startY: currentY + 4,
+                head: [['Code', 'Description', 'Price', 'Sold', 'Stock', 'Total']],
+                body: shop.rows,
+                headStyles: { fillColor: [26, 115, 232] },
+                styles: { fontSize: 8 }
+            });
+            currentY = doc.lastAutoTable.finalY + 10;
+        });
+
+        // PDF CREDIT AT BOTTOM OF LAST PAGE
+        doc.setFontSize(10);
+        doc.setTextColor(150);
+        doc.text("System Developed by: [YOUR NAME] - Contact: [YOUR PHONE NUMBER]", 105, 290, { align: "center" });
+
+        doc.save(`Global_Report_${dateRaw}.pdf`);
+    }
+
+    addShop();
+</script>
+</body>
+</html>
