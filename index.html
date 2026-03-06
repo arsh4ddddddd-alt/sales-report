@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Global Sales System - Pro Edition</title>
@@ -22,10 +22,12 @@
         #reportDate { width: 90%; max-width: 250px; padding: 12px; border: 2px solid #1a73e8; border-radius: 8px; font-size: 16px; font-weight: bold; text-align: center; background: white; color: black; display: inline-block; }
 
         .shop-box { border: 2px solid #1a73e8; padding: 12px; border-radius: 8px; margin-bottom: 20px; background: var(--card); position: relative; }
-        .shop-name { width: 85%; padding: 10px; font-weight: bold; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 15px; font-size: 15px; background: var(--card); color: var(--text); }
         
-        /* RESTORED: Delete button at top right of shop box */
-        .shop-del { position: absolute; top: 5px; right: 5px; background: #d93025; color: white; border:none; padding: 3px 8px; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+        /* Fixed: Shop name width reduced to 75% to ensure it never hits the button */
+        .shop-name { width: 75%; padding: 10px; font-weight: bold; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 15px; font-size: 15px; background: var(--card); color: var(--text); }
+        
+        /* Fixed: Smaller Delete button moved to the far top-right corner */
+        .shop-del { position: absolute; top: 8px; right: 8px; background: #d93025; color: white; border:none; padding: 2px 6px; font-size: 9px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
 
         .item-row { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr auto; gap: 5px; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 8px; align-items: end; }
         .search-inner { background: #fffde7; padding: 5px; border-radius: 4px; margin-bottom: 5px; border: 1px solid #fbc02d; font-size: 11px; width: 100%; box-sizing: border-box; color: #333; }
@@ -50,10 +52,10 @@
         <button class="dark-toggle" onclick="toggleDarkMode()">🌓 THEME</button>
     </div>
 
-    <h2>Rapport des Ventes</h2>
+    <h2>Sales Report</h2>
     
     <div class="date-container">
-        <label>Date du Rapport</label>
+        <label>Report Date</label>
         <input type="date" id="reportDate" onchange="saveAll()">
     </div>
 
@@ -69,33 +71,33 @@
 
 <script>
     const products = [
-        {code: "DRC1201", name: "CAFE GINKO GINSENG", price: 13.00},
-        {code: "DRC1202", name: "CAFÉ THE VERT GANO", price: 14.00},
-        {code: "DRC1203", name: "CAFÉ KACIP FATIMA GANO", price: 14.00},
-        {code: "DRC1204", name: "CAFE TONGKAT MACCA", price: 14.00},
-        {code: "DRC1205", name: "CAFÉ CUPPUCCINO GANO", price: 15.00},
+        {code: "DRC1201", name: "GINKO GINSENG COFFEE", price: 13.00},
+        {code: "DRC1202", name: "GREEN TEA GANO COFFEE", price: 14.00},
+        {code: "DRC1203", name: "KACIP FATIMA GANO COFFEE", price: 14.00},
+        {code: "DRC1204", name: "TONGKAT MACCA COFFEE", price: 14.00},
+        {code: "DRC1205", name: "CAPPUCCINO GANO COFFEE", price: 15.00},
         {code: "DRC1802A", name: "ALFALFA GUARANA 500ML", price: 20.00},
-        {code: "DRC1804", name: "GANODERMA CAFE (20s)", price: 11.00},
+        {code: "DRC1804", name: "GANODERMA COFFEE (20s)", price: 11.00},
         {code: "DRC1810", name: "YEE GANO 90s", price: 23.00},
         {code: "DRC1811", name: "YEEGARLIC 90's", price: 23.00},
-        {code: "DRC1814", name: "GANO CHOCOLAT 30s", price: 19.00},
-        {code: "DRC1817", name: "CAFÉ PRESIDENT 4 EN 1", price: 15.00},
-        {code: "DRC1818", name: "CAFÉ NOIR TONGKAT ALI", price: 14.00},
-        {code: "DRC2802", name: "LAIT CHEVRE TABS 150's", price: 16.00},
-        {code: "DRC2804", name: "POUDRE DE SOJA", price: 17.00},
-        {code: "DRC2805", name: "SPIRULLINA SOLUBLE", price: 17.00},
+        {code: "DRC1814", name: "GANO CHOCOLATE 30s", price: 19.00},
+        {code: "DRC1817", name: "PRESIDENT COFFEE 4 IN 1", price: 15.00},
+        {code: "DRC1818", name: "BLACK TONGKAT ALI COFFEE", price: 14.00},
+        {code: "DRC2802", name: "GOAT MILK TABS 150's", price: 16.00},
+        {code: "DRC2804", name: "SOYBEAN POWDER", price: 17.00},
+        {code: "DRC2805", name: "SOLUBLE SPIRULLINA", price: 17.00},
         {code: "DRC2807", name: "SPIRULINA (300's)", price: 22.00},
         {code: "DRC2812", name: "HERBA MAHARANI", price: 36.00},
-        {code: "DRC2813", name: "SOJA GINGEMBRE", price: 14.00},
-        {code: "DRC2814", name: "LAIT DE CHEVRE PREMIX", price: 15.00},
+        {code: "DRC2813", name: "GINGER SOYBEAN", price: 14.00},
+        {code: "DRC2814", name: "GOAT MILK PREMIX", price: 15.00},
         {code: "DRC3804", name: "DYNA TONIC 780ml", price: 33.00},
         {code: "DRC3809", name: "YEE YANG YEN 90's", price: 23.00},
-        {code: "DRC3810", name: "RED COFFEE GINSENG", price: 13.00},
+        {code: "DRC3810", name: "RED GINSENG COFFEE", price: 13.00},
         {code: "DRC3812", name: "GREEN TEA CAPSULE 60's", price: 23.00},
         {code: "DRC3814", name: "PROLINK 20's", price: 36.00},
-        {code: "DRC4803", name: "GINSENG MIEL ET GINGEMBRE", price: 17.00},
+        {code: "DRC4803", name: "GINSENG HONEY & GINGER", price: 17.00},
         {code: "DRC4805", name: "GINSENG CAPSULE 90s", price: 31.00},
-        {code: "DRC4810", name: "CAFÉ TONGKAT ALI (20s)", price: 11.00},
+        {code: "DRC4810", name: "TONGKAT ALI COFFEE (20s)", price: 11.00},
         {code: "DRC4811", name: "GINALI CAPSULE 100's", price: 27.00},
         {code: "DRC4815", name: "YEEGINKGO TABLET 90's", price: 23.00},
         {code: "DRC4817", name: "MILK THISTLE 120's", price: 36.00},
@@ -113,7 +115,7 @@
     }
 
     function clearEverything() {
-        if(confirm("Nouveau rapport ? Cela effacera les données actuelles.")) {
+        if(confirm("Start new report? This will clear current data.")) {
             localStorage.removeItem('dynapharmData');
             location.reload();
         }
@@ -125,7 +127,7 @@
         div.className = 'shop-box';
         div.innerHTML = `
             <button class="shop-del" onclick="this.parentElement.remove(); saveAll();">DELETE</button>
-            <input type="text" class="shop-name" placeholder="NOM DE LA BOUTIQUE" oninput="saveAll()">
+            <input type="text" class="shop-name" placeholder="SHOP NAME" oninput="saveAll()">
             <div class="items-list"></div>
             <button class="load-all" onclick="loadAllProducts(this)">⚡ LOAD ALL PRODUCTS</button>
             <button class="add-item" onclick="addItem(this)">+ ADD ONE</button>
@@ -153,13 +155,13 @@
         let opts = products.map(p => `<option value="${p.price}|${p.code}|${p.name}">${p.code} - ${p.name}</option>`).join('');
         row.innerHTML = `
             <div>
-                <label>🔍 Chercher</label>
+                <label>🔍 Search</label>
                 <input type="text" class="search-inner" placeholder="Code" oninput="filterLocalSelect(this)">
                 <select class="pData" onchange="updateRowPrice(this); saveAll();">${opts}</select>
             </div>
-            <div><label>Prix</label><input type="number" class="pPrice" readonly></div>
-            <div><label>Vendu</label><input type="number" class="pSold" value="0" onfocus="this.select()" oninput="saveAll()" onkeydown="handleEnter(event, 'sold')"></div>
-            <div><label>Reste</label><input type="number" class="pStock" value="0" onfocus="this.select()" oninput="saveAll()" onkeydown="handleEnter(event, 'stock')"></div>
+            <div><label>Price</label><input type="number" class="pPrice" readonly></div>
+            <div><label>Sold</label><input type="number" class="pSold" value="0" onfocus="this.select()" oninput="saveAll()" onkeydown="handleEnter(event, 'sold')"></div>
+            <div><label>Stock</label><input type="number" class="pStock" value="0" onfocus="this.select()" oninput="saveAll()" onkeydown="handleEnter(event, 'stock')"></div>
             <button class="del-btn" onclick="this.parentElement.remove(); saveAll();">×</button>
         `;
         list.appendChild(row);
@@ -232,7 +234,7 @@
         const date = document.getElementById('reportDate').value;
         
         doc.setFontSize(18); doc.setTextColor(211, 47, 47);
-        doc.text("RAPPORT DE VENTES & INVENTAIRE", 105, 15, { align: "center" });
+        doc.text("SALES & INVENTORY REPORT", 105, 15, { align: "center" });
         doc.setFontSize(10); doc.setTextColor(0);
         doc.text("Date: " + date, 14, 25);
 
@@ -257,8 +259,8 @@
         });
 
         doc.autoTable({
-            startY: 35, head: [['Boutique', 'Total Vendu ($)']],
-            body: [...summaries, [{content: 'TOTAL GENERAL', styles: {fontStyle: 'bold'}}, "$" + grandTotal.toFixed(2)]],
+            startY: 35, head: [['Shop Name', 'Total Sales ($)']],
+            body: [...summaries, [{content: 'GRAND TOTAL', styles: {fontStyle: 'bold'}}, "$" + grandTotal.toFixed(2)]],
             headStyles: { fillColor: [230, 126, 34] }
         });
 
@@ -270,14 +272,14 @@
             
             doc.autoTable({
                 startY: currentY + 4,
-                head: [['Code', 'Produit', 'Prix', 'Vendu', 'Stock', 'Total $']],
+                head: [['Code', 'Product', 'Price', 'Sold', 'Stock', 'Total $']],
                 body: shop.rows,
                 headStyles: { fillColor: [231, 76, 60] },
                 styles: { fontSize: 8 }
             });
             currentY = doc.lastAutoTable.finalY + 15;
         });
-        doc.save(`Rapport_Ventes_${date}.pdf`);
+        doc.save(`Sales_Report_${date}.pdf`);
     }
 </script>
 </body>
