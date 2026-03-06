@@ -7,121 +7,122 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
-        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #d32f2f; }
-        .shop-section { border: 2px solid #ff9800; padding: 15px; margin-bottom: 20px; border-radius: 5px; position: relative; }
-        .shop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        input[type="text"], input[type="number"] { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-        .shop-name-input { width: 60%; font-weight: bold; border: 2px solid #ff9800 !important; }
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; }
+        .shop-section { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 5px; background: #fafafa; position: relative; }
+        .delete-btn { position: absolute; top: 10px; right: 10px; background: red; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #ff9800; color: white; }
-        .btn { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-add { background-color: #4caf50; color: white; margin-bottom: 20px; }
-        .btn-pdf { background-color: #2196f3; color: white; width: 100%; font-size: 18px; margin-top: 20px; }
-        .btn-delete { background-color: #f44336; color: white; font-size: 12px; }
-        .total-row { font-weight: bold; background: #eee; }
+        th { background-color: #f2f2f2; }
+        input { width: 100%; box-sizing: border-box; padding: 5px; }
+        .controls { margin-bottom: 20px; text-align: center; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; background-color: #28a745; color: white; border: none; border-radius: 5px; }
+        .pdf-btn { background-color: #007bff; margin-left: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>DYNAPHARM SALES REPORT</h2>
-    
-    <button class="btn btn-add" onclick="addShop()">+ Add New Shop</button>
-    
-    <div id="shops-container"></div>
-
-    <button class="btn btn-pdf" onclick="generatePDF()">Download PDF Report</button>
+    <h1>Dynapharm Sales Report</h1>
+    <div class="controls">
+        <button onclick="addShop()">Add Shop</button>
+        <button class="pdf-btn" onclick="generatePDF()">Download PDF</button>
+    </div>
+    <div id="shopsContainer"></div>
 </div>
 
 <script>
+    let shopCount = 0;
     const products = [
-        { id: "1201", name: "Chlorophyll (Small)" },
-        { id: "1202", name: "Chlorophyll (Large)" },
-        { id: "2205", name: "Ginseng Coffee" },
-        { id: "3301", name: "Yee Yang Tablet" }
+        { code: "1201", name: "CHLOROPHYLL 500ML" },
+        { code: "1202", name: "CHLOROPHYLL 250ML" },
+        { code: "2205", name: "GINSENG COFFEE 2 IN 1" },
+        { code: "2217", name: "TONGKAT ALI COFFEE 5 IN 1" },
+        { code: "3301", name: "YEE YANG TABLET" },
+        { code: "3305", name: "SEA CUCUMBER JELLY" }
     ];
 
     function addShop() {
-        const container = document.getElementById('shops-container');
-        const shopId = Date.now();
-        const shopHtml = `
-            <div class="shop-section" id="shop-${shopId}">
-                <div class="shop-header">
-                    <input type="text" class="shop-name-input" placeholder="Enter Shop Name (e.g. KAPENDA 1)">
-                    <button class="btn btn-delete" onclick="removeShop(${shopId})">DELETE SHOP</button>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Code</th>
-                            <th>Product Name</th>
-                            <th>Sold</th>
-                            <th>Stock</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${products.map(p => `
-                            <tr>
-                                <td>${p.id}</td>
-                                <td>${p.name}</td>
-                                <td><input type="number" class="sold-input" value="0" min="0" onchange="calculateTotals()"></td>
-                                <td><input type="number" class="stock-input" value="0" min="0"></td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
+        shopCount++;
+        const container = document.getElementById('shopsContainer');
+        const shopDiv = document.createElement('div');
+        shopDiv.className = 'shop-section';
+        shopDiv.id = `shop-${shopCount}`;
+        
+        let tableHtml = `
+            <button class="delete-btn" onclick="removeShop(${shopCount})">Delete</button>
+            <label>Shop Name: </label>
+            <input type="text" id="name-${shopCount}" placeholder="Enter Shop Name" style="width: 200px; margin-bottom: 10px;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Product Name</th>
+                        <th>Sold</th>
+                        <th>Stock</th>
+                    </tr>
+                </thead>
+                <tbody>
         `;
-        container.insertAdjacentHTML('beforeend', shopHtml);
+
+        products.forEach((prod, index) => {
+            tableHtml += `
+                <tr>
+                    <td>${prod.code}</td>
+                    <td>${prod.name}</td>
+                    <td><input type="number" id="sold-${shopCount}-${index}" value="0"></td>
+                    <td><input type="number" id="stock-${shopCount}-${index}" value="0"></td>
+                </tr>
+            `;
+        });
+
+        tableHtml += `</tbody></table>`;
+        shopDiv.innerHTML = tableHtml;
+        container.appendChild(shopDiv);
     }
 
     function removeShop(id) {
-        document.getElementById(`shop-${id}`).remove();
+        const shop = document.getElementById(`shop-${id}`);
+        shop.remove();
     }
 
     function generatePDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        
+        let yPos = 20;
+
         doc.setFontSize(18);
-        doc.setTextColor(211, 47, 47);
-        doc.text("DYNAPHARM DAILY SALES REPORT", 14, 20);
-        
-        doc.setFontSize(12);
-        doc.setTextColor(0, 0, 0);
-        doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 30);
+        doc.text("Dynapharm Sales Report", 105, yPos, { align: "center" });
+        yPos += 10;
 
-        let yOffset = 40;
-        const shops = document.querySelectorAll('.shop-section');
+        for (let i = 1; i <= shopCount; i++) {
+            const shopNameInput = document.getElementById(`name-${i}`);
+            if (!shopNameInput) continue;
 
-        shops.forEach((shop, index) => {
-            const shopName = shop.querySelector('.shop-name-input').value || `Shop ${index + 1}`;
-            doc.setFont(undefined, 'bold');
-            doc.text(`SHOP: ${shopName.toUpperCase()}`, 14, yOffset);
-            
-            const rows = [];
-            shop.querySelectorAll('tbody tr').forEach(tr => {
-                const tds = tr.querySelectorAll('td');
-                const sold = tr.querySelector('.sold-input').value;
-                const stock = tr.querySelector('.stock-input').value;
-                rows.push([tds[0].innerText, tds[1].innerText, sold, stock]);
+            const shopName = shopNameInput.value || `Shop ${i}`;
+            yPos += 10;
+            doc.setFontSize(14);
+            doc.text(`Shop: ${shopName}`, 14, yPos);
+            yPos += 5;
+
+            const tableData = [];
+            products.forEach((prod, index) => {
+                const sold = document.getElementById(`sold-${i}-${index}`).value;
+                const stock = document.getElementById(`stock-${i}-${index}`).value;
+                tableData.push([prod.code, prod.name, sold, stock]);
             });
 
             doc.autoTable({
-                startY: yOffset + 5,
-                head: [['Code', 'Product', 'Sold', 'Stock']],
-                body: rows,
-                theme: 'grid',
-                headStyles: { fillGray: [255, 152, 0] }
+                startY: yPos,
+                head: [['Code', 'Product Name', 'Sold', 'Stock']],
+                body: tableData,
             });
 
-            yOffset = doc.lastAutoTable.finalY + 15;
-        });
+            yPos = doc.lastAutoTable.finalY + 10;
+        }
 
-        doc.save("Dynapharm_Report.pdf");
+        doc.save("Sales_Report.pdf");
     }
 </script>
 
