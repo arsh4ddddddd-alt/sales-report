@@ -26,7 +26,7 @@
         /* THE LONG RED DELETE BUTTON AT THE TOP */
         .shop-del { background: #d93025; color: white; border:none; padding: 10px; font-size: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; width: 100%; margin-bottom: 10px; }
 
-        /* SHOP NAME INPUT FIELD NOW UNDER THE BUTTON */
+        /* SHOP NAME INPUT FIELD UNDER THE BUTTON AS REQUESTED */
         .shop-name { width: 100%; padding: 12px; font-weight: bold; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 15px; font-size: 15px; background: var(--card); color: var(--text); box-sizing: border-box; }
 
         .item-row { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr auto; gap: 5px; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 8px; align-items: end; }
@@ -268,7 +268,7 @@
         details.forEach(shop => {
             if (currentY > 240) { doc.addPage(); currentY = 20; }
             doc.setFontSize(12); doc.setTextColor(231, 76, 60); doc.setFont("helvetica", "bold");
-            doc.text(`DETAIL: ${shop.name}`, 14, currentY);
+            doc.text(`DETAIL: ${shop.name} (Sales = $${shop.total.toFixed(2)})`, 14, currentY);
             
             doc.autoTable({
                 startY: currentY + 4,
