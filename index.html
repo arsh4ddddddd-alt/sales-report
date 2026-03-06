@@ -23,11 +23,11 @@
 
         .shop-box { border: 2px solid #1a73e8; padding: 12px; border-radius: 8px; margin-bottom: 20px; background: var(--card); position: relative; }
         
-        /* SHOP NAME input width */
-        .shop-name { width: 80%; padding: 10px; font-weight: bold; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 15px; font-size: 15px; background: var(--card); color: var(--text); }
+        /* ADJUSTED: Shop name width slightly reduced so it doesn't collide with the button */
+        .shop-name { width: calc(100% - 90px); padding: 10px; font-weight: bold; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 15px; font-size: 15px; background: var(--card); color: var(--text); }
         
-        /* DELETE BUTTON: Placed exactly where the yellow circle was indicated */
-        .shop-del { position: absolute; top: 12px; right: 12px; background: #d93025; color: white; border:none; padding: 4px 10px; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; z-index: 10; }
+        /* RESTORED: Long DELETE button positioned at the top-right corner as shown in your screenshot */
+        .shop-del { position: absolute; top: 12px; right: 12px; background: #d93025; color: white; border:none; padding: 8px 15px; font-size: 11px; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; }
 
         .item-row { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr auto; gap: 5px; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 8px; align-items: end; }
         .search-inner { background: #fffde7; padding: 5px; border-radius: 4px; margin-bottom: 5px; border: 1px solid #fbc02d; font-size: 11px; width: 100%; box-sizing: border-box; color: #333; }
@@ -284,3 +284,4 @@
 </script>
 </body>
 </html>
+
