@@ -23,11 +23,11 @@
 
         .shop-box { border: 2px solid #1a73e8; padding: 12px; border-radius: 8px; margin-bottom: 20px; background: var(--card); position: relative; }
         
-        /* Fixed: Shop name width reduced to 75% to ensure it never hits the button */
-        .shop-name { width: 75%; padding: 10px; font-weight: bold; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 15px; font-size: 15px; background: var(--card); color: var(--text); }
+        /* SHOP NAME input width */
+        .shop-name { width: 80%; padding: 10px; font-weight: bold; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 15px; font-size: 15px; background: var(--card); color: var(--text); }
         
-        /* Fixed: Smaller Delete button moved to the far top-right corner */
-        .shop-del { position: absolute; top: 8px; right: 8px; background: #d93025; color: white; border:none; padding: 2px 6px; font-size: 9px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+        /* DELETE BUTTON: Placed exactly where the yellow circle was indicated */
+        .shop-del { position: absolute; top: 12px; right: 12px; background: #d93025; color: white; border:none; padding: 4px 10px; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; z-index: 10; }
 
         .item-row { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr auto; gap: 5px; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 8px; align-items: end; }
         .search-inner { background: #fffde7; padding: 5px; border-radius: 4px; margin-bottom: 5px; border: 1px solid #fbc02d; font-size: 11px; width: 100%; box-sizing: border-box; color: #333; }
