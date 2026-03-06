@@ -24,8 +24,8 @@
         .shop-box { border: 2px solid #1a73e8; padding: 12px; border-radius: 8px; margin-bottom: 20px; background: var(--card); position: relative; }
         .shop-name { width: 85%; padding: 10px; font-weight: bold; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 15px; font-size: 15px; background: var(--card); color: var(--text); }
         
-        /* Fixed: Remove button is now just X and smaller */
-        .shop-del { position: absolute; top: -10px; right: 10px; background: #d93025; color: white; border:none; padding: 4px 12px; font-size: 14px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        /* RESTORED: Delete button at top right of shop box */
+        .shop-del { position: absolute; top: 5px; right: 5px; background: #d93025; color: white; border:none; padding: 3px 8px; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
 
         .item-row { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr auto; gap: 5px; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 8px; align-items: end; }
         .search-inner { background: #fffde7; padding: 5px; border-radius: 4px; margin-bottom: 5px; border: 1px solid #fbc02d; font-size: 11px; width: 100%; box-sizing: border-box; color: #333; }
@@ -124,7 +124,7 @@
         const div = document.createElement('div');
         div.className = 'shop-box';
         div.innerHTML = `
-            <button class="shop-del" onclick="this.parentElement.remove(); saveAll();">X</button>
+            <button class="shop-del" onclick="this.parentElement.remove(); saveAll();">DELETE</button>
             <input type="text" class="shop-name" placeholder="NOM DE LA BOUTIQUE" oninput="saveAll()">
             <div class="items-list"></div>
             <button class="load-all" onclick="loadAllProducts(this)">⚡ LOAD ALL PRODUCTS</button>
