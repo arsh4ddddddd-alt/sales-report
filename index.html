@@ -21,13 +21,13 @@
         .date-container { text-align: center; margin: 15px 0; background: #fffde7; padding: 10px; border-radius: 8px; border: 1px solid #fbc02d; }
         #reportDate { width: 90%; max-width: 250px; padding: 12px; border: 2px solid #1a73e8; border-radius: 8px; font-size: 16px; font-weight: bold; text-align: center; background: white; color: black; display: inline-block; }
 
-        .shop-box { border: 2px solid #1a73e8; padding: 12px; border-radius: 8px; margin-bottom: 20px; background: var(--card); position: relative; }
+        .shop-box { border: 2px solid #1a73e8; padding: 12px; border-radius: 8px; margin-bottom: 20px; background: var(--card); display: flex; flex-direction: column; }
         
-        /* ADJUSTED: Shop name width slightly reduced so it doesn't collide with the button */
-        .shop-name { width: calc(100% - 90px); padding: 10px; font-weight: bold; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 15px; font-size: 15px; background: var(--card); color: var(--text); }
-        
-        /* RESTORED: Long DELETE button positioned at the top-right corner as shown in your screenshot */
-        .shop-del { position: absolute; top: 12px; right: 12px; background: #d93025; color: white; border:none; padding: 8px 15px; font-size: 11px; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; }
+        /* THE LONG RED DELETE BUTTON AT THE TOP */
+        .shop-del { background: #d93025; color: white; border:none; padding: 10px; font-size: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; width: 100%; margin-bottom: 10px; }
+
+        /* SHOP NAME INPUT FIELD NOW UNDER THE BUTTON */
+        .shop-name { width: 100%; padding: 12px; font-weight: bold; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 15px; font-size: 15px; background: var(--card); color: var(--text); box-sizing: border-box; }
 
         .item-row { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr auto; gap: 5px; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 8px; align-items: end; }
         .search-inner { background: #fffde7; padding: 5px; border-radius: 4px; margin-bottom: 5px; border: 1px solid #fbc02d; font-size: 11px; width: 100%; box-sizing: border-box; color: #333; }
@@ -284,4 +284,3 @@
 </script>
 </body>
 </html>
-
