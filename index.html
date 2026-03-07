@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Global Sales System - Master Inventory</title>
+    <title>Global Sales System - Pro Edition</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -30,7 +30,6 @@
         label { font-weight: bold; font-size: 9px; color: #666; display: block; margin-bottom: 2px; text-transform: uppercase; }
         input, select { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; box-sizing: border-box; background: var(--card); color: var(--text); }
         
-        /* Highlight the Remaining Stock */
         .pRemaining { background: #e8f5e9 !important; font-weight: bold; color: #2e7d32 !important; border: 1px solid #2e7d32 !important; }
 
         button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 8px; }
@@ -109,11 +108,12 @@
     ];
 
     function startNewDay() {
-        if(confirm("Ready for a new day? Sold values will reset, but Remaining Stock becomes your new Starting Stock!")) {
+        if(confirm("Confirm: Move 'Reste' to 'Opening' and clear 'Sold' for a new day?")) {
             document.querySelectorAll('.item-row').forEach(row => {
                 const remaining = row.querySelector('.pRemaining').value;
-                row.querySelector('.pStart').value = remaining; // Yesterday's remaining is today's start
-                row.querySelector('.pSold').value = 0; // Reset sales
+                row.querySelector('.pStart').value = remaining; 
+                row.querySelector('.pSold').value = 0; 
+                row.querySelector('.pRemaining').value = remaining; 
             });
             document.getElementById('reportDate').valueAsDate = new Date();
             saveAll();
@@ -233,12 +233,14 @@
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const date = document.getElementById('reportDate').value;
+        const dateObj = new Date(date);
+        const formattedDate = dateObj.toLocaleDateString('fr-FR');
         
         doc.setFontSize(16); doc.setTextColor(230, 126, 34);
-        doc.text("RAPPORT VENTES & INVENTAIRE", 14, 20);
+        doc.text("RAPPORT GLOBAL DES VENTES & INVENTAIRE", 14, 20);
         
         doc.setFontSize(10); doc.setTextColor(0);
-        doc.text("Date: " + date, 14, 28);
+        doc.text("Date ciblée : " + formattedDate, 14, 28);
 
         let grandTotal = 0;
         let summaries = [];
@@ -255,7 +257,8 @@
                 const remaining = row.querySelector('.pRemaining').value || 0;
                 const totalLine = parseFloat(price) * sold;
                 shopTotal += totalLine;
-                rows.push([code, pName, start, sold, remaining, "$" + totalLine.toFixed(2)]);
+                // THIS ORDER IS THE FIX: Code, Product, Price, Opening, Sold, Remaining, Total
+                rows.push([code, pName, "$" + parseFloat(price).toFixed(2), start, sold, remaining, "$" + totalLine.toFixed(2)]);
             });
             grandTotal += shopTotal;
             summaries.push([name, "$" + shopTotal.toFixed(2)]);
@@ -264,24 +267,35 @@
 
         doc.autoTable({
             startY: 40, 
-            head: [['Boutique', 'Total ($)']],
+            head: [['Boutique', 'Total des Ventes ($)']],
             body: summaries,
-            headStyles: { fillColor: [230, 126, 34] }
+            headStyles: { fillColor: [230, 126, 34] },
+            theme: 'striped'
         });
 
+        let finalY = doc.lastAutoTable.finalY + 10;
+        doc.setFontSize(12); doc.setTextColor(230, 126, 34); doc.setFont("helvetica", "bold");
+        doc.text("TOTAL GÉNÉRAL DU JOUR : $" + grandTotal.toFixed(2), 14, finalY);
+
+        let currentY = finalY + 15;
+        
         details.forEach(shop => {
-            doc.addPage();
-            doc.setFontSize(12); doc.setTextColor(211, 47, 47);
-            doc.text(`BOUTIQUE : ${shop.name}`, 14, 20);
+            if (currentY > 240) { doc.addPage(); currentY = 20; }
+            doc.setFontSize(11); doc.setTextColor(211, 47, 47); doc.setFont("helvetica", "bold");
+            doc.text(`DÉTAIL : ${shop.name} ( Ventes = $${shop.total.toFixed(2)} )`, 14, currentY);
+            
             doc.autoTable({
-                startY: 25,
-                head: [['Code', 'Produit', 'Opening', 'Sold', 'Remaining', 'Total']],
+                startY: currentY + 4,
+                head: [['Code', 'Désignation', 'Prix Unit.', 'Opening', 'Vendu', 'Reste', 'Total $']],
                 body: shop.rows,
-                headStyles: { fillColor: [190, 30, 30] }
+                headStyles: { fillColor: [190, 30, 30] },
+                styles: { fontSize: 7 }, // Slightly smaller to fit all columns
+                theme: 'striped'
             });
+            currentY = doc.lastAutoTable.finalY + 15;
         });
 
-        doc.save(`Rapport_${date}.pdf`);
+        doc.save(`Ventes_Globales_${date}.pdf`);
     }
 
     function toggleDarkMode() {
